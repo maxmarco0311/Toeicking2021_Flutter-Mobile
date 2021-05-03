@@ -6,15 +6,15 @@ class DynamicLinkService {
   // 接收dynamicLink的方法(context參數是用在Navigator轉導)
   Future<void> retrieveDynamicLink(BuildContext context) async {
     try {
+      // 若APP沒打開，透過dynamic link打開時會呼叫getInitialLink()
       final PendingDynamicLinkData data =
-          // 若APP沒打開，透過dynamic link打開時會呼叫getInitialLink()
           await FirebaseDynamicLinks.instance.getInitialLink();
       // 透過data?.link取得deeplink
       final Uri deepLink = data?.link;
 
       // 檢查deepLink不是null
       if (deepLink != null) {
-        // deeplink有參數的話在這裡處理
+        // ***deeplink參數處理***
         // 1. 先搜尋是否有參數的name字串
         if (deepLink.queryParameters.containsKey('id')) {
           // 2. 再用deepLink.queryParameters['參數的name']取得參數值

@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
+  // 原有屬性寫在這裡
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
 
@@ -46,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       _timerLink = new Timer(
         const Duration(milliseconds: 1000),
         () {
+          // StatefulWidget在build()方法外可以取到BuildContext context(initState()除外)
           _dynamicLinkService.retrieveDynamicLink(context);
         },
       );
