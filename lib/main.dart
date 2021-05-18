@@ -1,10 +1,9 @@
-import 'dart:async';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:share/share.dart';
-import 'package:toeicking2021/services/dynamic_links_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
 
@@ -15,7 +14,7 @@ class MyApp extends StatelessWidget {
       title: '多益金',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       home: MyHomePage(title: '多益金'),
     );
@@ -23,7 +22,6 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  // 原有屬性寫在這裡
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
 
@@ -31,94 +29,40 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  final DynamicLinkService _dynamicLinkService = DynamicLinkService();
-  Timer _timerLink;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
   }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      _timerLink = new Timer(
-        const Duration(milliseconds: 1000),
-        () {
-          // StatefulWidget在build()方法外可以取到BuildContext context(initState()除外)
-          _dynamicLinkService.retrieveDynamicLink(context);
-        },
-      );
-    }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    if (_timerLink != null) {
-      _timerLink.cancel();
-    }
-    super.dispose();
-  }
-
-  // int _counter = 0;
-  // void _incrementCounter() {
-  //   setState(() {
-  //     _counter++;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.title),
+      ),
       body: Center(
-        child: Container(
-          height: 50,
-          width: 100,
-          child: FutureBuilder<Uri>(
-              future: _dynamicLinkService.createDynamicLink(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  Uri uri = snapshot.data;
-                  return FlatButton(
-                    color: Colors.amber,
-                    onPressed: () => Share.share(uri.toString()),
-                    child: Text('Share'),
-                  );
-                } else {
-                  return Container();
-                }
-              }),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ),
     );
-
-    // return Scaffold(
-    //   appBar: AppBar(
-    //     centerTitle: true,
-    //     title: Text(widget.title),
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //       mainAxisAlignment: MainAxisAlignment.center,
-    //       children: <Widget>[
-    //         Text(
-    //           'You have pushed the button this many times:',
-    //         ),
-    //         Text(
-    //           '$_counter',
-    //           style: Theme.of(context).textTheme.headline4,
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    //   floatingActionButton: FloatingActionButton(
-    //     onPressed: _incrementCounter,
-    //     tooltip: 'Increment',
-    //     child: Icon(Icons.add),
-    //   ),
-    // );
   }
 }

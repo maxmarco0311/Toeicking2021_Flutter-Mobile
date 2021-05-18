@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "12380945246",
+    "project_id": "toeicking2021",
+    "storage_bucket": "toeicking2021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12380945246:android:5b6d03ac5ecd7a039dedcf",
+        "android_client_info": {
+          "package_name": "com.example.toeicking2021"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12380945246-gdmo9n5auj6abn8mrrmo037lcp8l8vpv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBB9YxSsxeVraHT3SPIud4nz3V-2ONYERU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12380945246-gdmo9n5auj6abn8mrrmo037lcp8l8vpv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

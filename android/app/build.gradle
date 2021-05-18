@@ -23,6 +23,8 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+// 4. 加入下列這行
+apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -35,10 +37,14 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.toeicking2021"
-        minSdkVersion 16
+        // Android使用Firebase的必要設定：
+        // 1. 這裡要改成21
+        minSdkVersion 21
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        // 2. 還要加入下列這行
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -55,5 +61,13 @@ flutter {
 }
 
 dependencies {
+    // 5. 加入下行(使用firebase-bom，下方套件不用寫版本)
+    implementation platform('com.google.firebase:firebase-bom:28.0.1')
+    // 6. 相關的Firebase套件，要在這裡添加dependency
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-dynamic-links'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

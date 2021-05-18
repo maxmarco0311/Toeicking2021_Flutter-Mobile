@@ -6,7 +6,8 @@ class DynamicLinkService {
   // 接收dynamicLink的方法(context參數是用在Navigator轉導)
   Future<void> retrieveDynamicLink(BuildContext context) async {
     try {
-      // 若APP沒打開，透過dynamic link打開時會呼叫getInitialLink()
+      // 兩種取得dynamic link的情境：
+      // 1. 若APP沒打開，透過dynamic link打開時會呼叫getInitialLink()
       final PendingDynamicLinkData data =
           await FirebaseDynamicLinks.instance.getInitialLink();
       // 透過data?.link取得deeplink
@@ -28,7 +29,7 @@ class DynamicLinkService {
           ),
         );
       }
-      // 若APP有打開在背景中，透過dynamic link打開時會呼叫onLink()
+      // 2. 若APP有打開在背景中，透過dynamic link打開時會呼叫onLink()
       FirebaseDynamicLinks.instance.onLink(
         onSuccess: (PendingDynamicLinkData dynamicLink) async {
           // 會自動傳入dynamicLink變數，其實就等同與上面data變數，可以自訂一個處理方法
