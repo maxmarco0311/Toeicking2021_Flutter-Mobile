@@ -1,5 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
+import 'package:toeicking2021/repositories/auth/auth_repositories.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,13 +13,42 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '多益金',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (_) => AuthRepository(),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) =>
+                AuthBloc(authRepository: context.read<AuthRepository>()),
+          ),
+        ],
+        child: MaterialApp(
+          title: '多益金',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primarySwatch: Colors.teal,
+            scaffoldBackgroundColor: Colors.grey[50],
+            appBarTheme: AppBarTheme(
+              brightness: Brightness.light,
+              color: Colors.teal,
+              iconTheme: const IconThemeData(color: Colors.white),
+              textTheme: const TextTheme(
+                headline6: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          home: MyHomePage(title: '多益金'),
+        ),
       ),
-      home: MyHomePage(title: '多益金'),
     );
   }
 }
