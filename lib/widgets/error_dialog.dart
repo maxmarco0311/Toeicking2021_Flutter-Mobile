@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 class ErrorDialog extends StatelessWidget {
   // 標題
   final String title;
+  // 錯誤code
+  final String code;
   // 內容
   final String content;
 
@@ -16,6 +18,7 @@ class ErrorDialog extends StatelessWidget {
     this.title = 'Error',
     // content每次都一樣，必備屬性
     @required this.content,
+    @required this.code,
   }) : super(key: key);
 
   @override
@@ -33,7 +36,7 @@ class ErrorDialog extends StatelessWidget {
       // 標題
       title: Text(title),
       // 內容
-      content: Text(content),
+      content: Text('$code: $content'),
       // 按鈕(Action)
       actions: [
         CupertinoDialogAction(

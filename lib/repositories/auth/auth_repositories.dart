@@ -23,41 +23,28 @@ class AuthRepository extends BaseAuthRepository {
   Stream<auth.User> get user => _firebaseAuth.userChanges();
 
   @override
-  // 註冊的方法
   Future<auth.User> signUpWithEmailAndPassword({
     @required String username,
     @required String email,
     @required String password,
   }) async {
     try {
-      // 用email及password建立user
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // 用credential.user取得Firebase User物件--> user
       final user = credential.user;
-      // 寄信驗證email
-      // 1. dynamic link設定
       var actionCodeSettings = ActionCodeSettings(
-          // deeplink：dynamic link要導向的位置，必須是一個實際的網址，可帶參數，之後可解析
-          url: 'https://www.example.com/?email=${user.email}',
-          // default prefix of a dynamic link：也可用自己設定的(通常改example那部份)
-          dynamicLinkDomain: "example.page.link",
-          // 專案的android id，必須與firebase project綁定的一樣
-          androidPackageName: "com.example.android",
+          url: 'https://toeicking.com/dynamiclink/index?email=test',
+          dynamicLinkDomain: 'toeicking.page.link',
+          androidPackageName: 'com.example.toeicking2021',
           androidInstallApp: true,
-          androidMinimumVersion: "12",
-          // 專案的ios id，必須與firebase project綁定的一樣
-          iOSBundleId: "com.example.ios",
+          androidMinimumVersion: '12',
+          // iOSBundleId: 'com.example.ios',
           handleCodeInApp: true);
-      // 2. 寄出信件
-      user.sendEmailVerification(actionCodeSettings);
-      _firebaseAuth.currentUser.reload();
-      // 將使用者資料存進資料庫：
-      // 1. 用Firebase User物件的uid屬性(user id)當document id
-      // 2. doc(user.uid)-->使用特定值當document id
-      // 3. 用set()將值寫入，參數為Map<String, dynamic>
+      await user.sendEmailVerification(actionCodeSettings);
+      // await user.sendEmailVerification();
+      await _firebaseAuth.currentUser.reload();
       _firebaseFirestore.collection(Paths.users).doc(user.uid).set({
         'username': username,
         'email': email,
@@ -66,7 +53,6 @@ class AuthRepository extends BaseAuthRepository {
       });
       return user;
     } on auth.FirebaseAuthException catch (err) {
-      // 要在這裡處理各種例外錯誤
       throw Failure(code: err.code, message: err.message);
     } on PlatformException catch (err) {
       throw Failure(code: err.code, message: err.message);

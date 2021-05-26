@@ -54,15 +54,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     // yield event.user != null
     //     ? AuthState.authenticated(user: event.user)
     //     : AuthState.unauthenticated();
+    print('_mapAuthUserChangedToState');
     if (event.user != null) {
       // 檢查是否有通過Email驗證
       if (event.user.emailVerified) {
-        AuthState.authenticated(user: event.user);
+        yield AuthState.authenticated(user: event.user);
       } else if (!event.user.emailVerified) {
-        AuthState.unverified(user: event.user);
+        yield AuthState.unverified(user: event.user);
       }
     } else {
-      AuthState.unauthenticated();
+      yield AuthState.unauthenticated();
     }
   }
 }

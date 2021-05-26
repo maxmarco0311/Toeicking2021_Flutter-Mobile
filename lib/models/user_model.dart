@@ -85,8 +85,8 @@ class User extends Equatable {
   factory User.fromDocument(DocumentSnapshot doc) {
     // 如果找不到(doc == null)就回傳null
     if (doc == null) return null;
-    // doc.data()才能取出一筆Document資料，回傳Map<String, dynamic>
-    final data = doc.data();
+    // doc.data()才能取出一筆Document資料，新版本要轉型成Map<String, dynamic>
+    final data = doc.data() as Map<String, dynamic>;
     // 裝回此類型物件(自訂user物件)
     return User(
       // doc.id取得Document的id

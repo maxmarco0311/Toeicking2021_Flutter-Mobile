@@ -6,6 +6,7 @@ import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
 import 'package:toeicking2021/screens/screens.dart';
 import 'package:toeicking2021/services/dynamic_links_service.dart';
 
+// StatefulWidget在build()方法外可以取到BuildContext context(initState()除外)
 class SplashScreen extends StatefulWidget {
   static const String routeName = '/splash';
   // 此方法回傳的Route物件，其實就是代表一個screen的抽象物件
@@ -40,12 +41,9 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      _timerLink = new Timer(
+      _timerLink = Timer(
         const Duration(milliseconds: 1000),
-        () {
-          // StatefulWidget在build()方法外可以取到BuildContext context(initState()除外)
-          _dynamicLinkService.retrieveDynamicLink(context);
-        },
+        () => _dynamicLinkService.retrieveDynamicLink(context),
       );
     }
   }
@@ -65,20 +63,28 @@ class _SplashScreenState extends State<SplashScreen>
       // iOS不可以滑回上頁，Andriod沒有上一頁箭頭，很重要!
       onWillPop: () async => false,
       // BlocListener是用在針對狀態改變"執行功能"，而非渲染UI
+      // ***在這裡註冊AuthBloc***
       child: BlocListener<AuthBloc, AuthState>(
+        // ***如果AuthChanged狀態不變，就不要觸發BlocListener***
+        // ***開發測試時，沒有進入nav，無法logout，所以按按鈕前AuthChanged狀態還沒變***
+        // ***所以按下按鈕沒有反應(因為listener的callback不會執行，所以無法導向)***
+        // listenWhen: (prevState, state) => prevState.status != state.status,
+
         listener: (context, state) {
           if (state.status == AuthStatus.unauthenticated) {
             // 導向Login Screen.
-            // Navigator.of(context).pushNamed(LoginScreen.routeName);
+            Navigator.of(context).pushNamed(LoginScreen.routeName);
           } else if (state.status == AuthStatus.authenticated) {
             // 導向Nav Screen.
-            // Navigator.of(context).pushNamed(NavScreen.routeName);
+            Navigator.of(context).pushNamed(NavScreen.routeName);
           } else if (state.status == AuthStatus.unverified) {
-            // 尚未驗證Email，導向一個頁面通知使用者去驗證Email
+            print(state.user.uid);
+            // Navigator.of(context).pushNamed(WebviewScreen.routeName);
+            // 註冊後但尚未驗證Email，導向一個頁面通知使用者去驗證Email
             Navigator.of(context).pushNamed(
               VerificationScreen.routeName,
               // username要從firestore裡去撈
-              arguments: {'email': state.user.email},
+              arguments: VerificationScreenArgs(email: state.user.email),
             );
           }
         },

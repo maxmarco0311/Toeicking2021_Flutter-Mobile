@@ -38,8 +38,10 @@ class LoginScreen extends StatelessWidget {
             if (state.status == LoginStatus.error) {
               showDialog(
                 context: context,
-                builder: (context) =>
-                    ErrorDialog(content: state.failure.message),
+                builder: (context) => ErrorDialog(
+                  content: state.failure.message,
+                  code: state.failure.code,
+                ),
               );
             }
           },
@@ -62,7 +64,7 @@ class LoginScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text(
-                              'Instagram',
+                              '多益金',
                               style: TextStyle(
                                 fontSize: 28.0,
                                 fontWeight: FontWeight.bold,
@@ -71,24 +73,23 @@ class LoginScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 12.0),
                             TextFormField(
-                              decoration: InputDecoration(hintText: 'Email'),
+                              decoration: InputDecoration(hintText: '電子郵件'),
                               onChanged: (value) => context
                                   .read<LoginCubit>()
                                   .emailChanged(value),
-                              validator: (value) => !value.contains('@')
-                                  ? 'Please enter a valid email.'
+                              validator: (value) => !value.trim().contains('@')
+                                  ? '請輸入有效的電子郵件'
                                   : null,
                             ),
                             const SizedBox(height: 16.0),
                             TextFormField(
-                              decoration: InputDecoration(hintText: 'Password'),
+                              decoration: InputDecoration(hintText: '密碼'),
                               obscureText: true,
                               onChanged: (value) => context
                                   .read<LoginCubit>()
                                   .passwordChanged(value),
-                              validator: (value) => value.length < 6
-                                  ? 'Must be at least 6 characters.'
-                                  : null,
+                              validator: (value) =>
+                                  value.trim().length < 6 ? '密碼需至少6個字元' : null,
                             ),
                             const SizedBox(height: 28.0),
                             RaisedButton(
@@ -99,7 +100,7 @@ class LoginScreen extends StatelessWidget {
                                 context,
                                 state.status == LoginStatus.submitting,
                               ),
-                              child: const Text('Log In'),
+                              child: const Text('登入'),
                             ),
                             const SizedBox(height: 12.0),
                             RaisedButton(
@@ -108,7 +109,7 @@ class LoginScreen extends StatelessWidget {
                               textColor: Colors.black,
                               onPressed: () => Navigator.of(context)
                                   .pushNamed(SignupScreen.routeName),
-                              child: const Text('No account? Sign up'),
+                              child: const Text('註冊'),
                             ),
                           ],
                         ),
@@ -127,6 +128,7 @@ class LoginScreen extends StatelessWidget {
   void _submitForm(BuildContext context, bool isSubmitting) {
     if (_formKey.currentState.validate() && !isSubmitting) {
       // 取得LoginCubit實體後，直接呼叫LoginCubit的方法改變狀態
+      print('_submitForm');
       context.read<LoginCubit>().logInWithCredentials();
     }
   }

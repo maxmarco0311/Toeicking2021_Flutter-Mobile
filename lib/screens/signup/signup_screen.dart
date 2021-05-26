@@ -35,6 +35,7 @@ class SignupScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => ErrorDialog(
+                  code: state.failure.code,
                   content: state.failure.message,
                 ),
               );
@@ -58,7 +59,7 @@ class SignupScreen extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text(
-                              'Instagram',
+                              '多益金',
                               style: TextStyle(
                                 fontSize: 28.0,
                                 fontWeight: FontWeight.bold,
@@ -67,34 +68,32 @@ class SignupScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 12.0),
                             TextFormField(
-                              decoration: InputDecoration(hintText: 'Username'),
+                              decoration: InputDecoration(hintText: '暱稱'),
                               onChanged: (value) => context
                                   .read<SignupCubit>()
                                   .usernameChanged(value),
-                              validator: (value) => value.trim().isEmpty
-                                  ? 'Please enter a valid username.'
-                                  : null,
+                              validator: (value) =>
+                                  value.trim().isEmpty ? '請輸入有效的暱稱' : null,
                             ),
                             const SizedBox(height: 16.0),
                             TextFormField(
-                              decoration: InputDecoration(hintText: 'Email'),
+                              decoration: InputDecoration(hintText: '電子郵件'),
                               onChanged: (value) => context
                                   .read<SignupCubit>()
                                   .emailChanged(value),
-                              validator: (value) => !value.contains('@')
-                                  ? 'Please enter a valid email.'
+                              validator: (value) => !value.trim().contains('@')
+                                  ? '請輸入有效的電子郵件'
                                   : null,
                             ),
                             const SizedBox(height: 16.0),
                             TextFormField(
-                              decoration: InputDecoration(hintText: 'Password'),
+                              decoration: InputDecoration(hintText: '密碼'),
                               obscureText: true,
                               onChanged: (value) => context
                                   .read<SignupCubit>()
                                   .passwordChanged(value),
-                              validator: (value) => value.length < 6
-                                  ? 'Must be at least 6 characters.'
-                                  : null,
+                              validator: (value) =>
+                                  value.trim().length < 6 ? '密碼需至少6個字元' : null,
                             ),
                             const SizedBox(height: 28.0),
                             RaisedButton(
@@ -105,7 +104,7 @@ class SignupScreen extends StatelessWidget {
                                 context,
                                 state.status == SignupStatus.submitting,
                               ),
-                              child: const Text('Sign Up'),
+                              child: const Text('註冊'),
                             ),
                             const SizedBox(height: 12.0),
                             RaisedButton(
@@ -113,7 +112,7 @@ class SignupScreen extends StatelessWidget {
                               color: Colors.grey[200],
                               textColor: Colors.black,
                               onPressed: () => Navigator.of(context).pop(),
-                              child: const Text('Back to Login'),
+                              child: const Text('登入'),
                             ),
                           ],
                         ),

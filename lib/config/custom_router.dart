@@ -19,13 +19,16 @@ class CustomRouter {
         // route()回傳的是Route物件，其實就是一個頁面，MaterialPageRoute()就是其中一種
         return SplashScreen.route();
       case VerificationScreen.routeName:
-        return VerificationScreen.route();
+        // 有路由參數
+        return VerificationScreen.route(args: settings.arguments);
       case LoginScreen.routeName:
         return LoginScreen.route();
       case SignupScreen.routeName:
         return SignupScreen.route();
-      // case NavScreen.routeName:
-      //   return NavScreen.route();
+      case NavScreen.routeName:
+        return NavScreen.route();
+      case WebviewScreen.routeName:
+        return WebviewScreen.route();
       default:
         return _errorRoute();
     }
