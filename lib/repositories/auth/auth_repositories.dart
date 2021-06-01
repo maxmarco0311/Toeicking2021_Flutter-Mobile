@@ -22,6 +22,8 @@ class AuthRepository extends BaseAuthRepository {
   // 用user(getter)取得Firebase user狀態變化的stream
   Stream<auth.User> get user => _firebaseAuth.userChanges();
 
+  auth.User get getCurrentUser => _firebaseAuth.currentUser;
+
   @override
   Future<auth.User> signUpWithEmailAndPassword({
     @required String username,
@@ -34,16 +36,16 @@ class AuthRepository extends BaseAuthRepository {
         password: password,
       );
       final user = credential.user;
-      var actionCodeSettings = ActionCodeSettings(
-          url: 'https://toeicking.com/dynamiclink/index?email=test',
-          dynamicLinkDomain: 'toeicking.page.link',
-          androidPackageName: 'com.example.toeicking2021',
-          androidInstallApp: true,
-          androidMinimumVersion: '12',
-          // iOSBundleId: 'com.example.ios',
-          handleCodeInApp: true);
-      await user.sendEmailVerification(actionCodeSettings);
-      // await user.sendEmailVerification();
+      // var actionCodeSettings = ActionCodeSettings(
+      //     url: 'https://toeicking.com/dynamiclink/index?email=test',
+      //     dynamicLinkDomain: 'toeicking.page.link',
+      //     androidPackageName: 'com.example.toeicking2021',
+      //     androidInstallApp: true,
+      //     androidMinimumVersion: '12',
+      //     // iOSBundleId: 'com.example.ios',
+      //     handleCodeInApp: true);
+      // await user.sendEmailVerification(actionCodeSettings);
+      await user.sendEmailVerification();
       await _firebaseAuth.currentUser.reload();
       _firebaseFirestore.collection(Paths.users).doc(user.uid).set({
         'username': username,

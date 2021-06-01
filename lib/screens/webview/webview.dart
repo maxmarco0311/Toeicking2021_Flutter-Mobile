@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toeicking2021/blocs/blocs.dart';
+import 'package:toeicking2021/repositories/repositories.dart';
+import 'package:toeicking2021/screens/screens.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebviewScreen extends StatefulWidget {
@@ -33,35 +37,51 @@ class _WebviewScreenState extends State<WebviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('前去收信'),
-        ),
-        body: IndexedStack(
-          index: position,
-          children: [
-            WebView(
-              javascriptMode: JavascriptMode.unrestricted,
-              initialUrl: 'https://mail.google.com',
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller.complete(webViewController);
-              },
-              onPageStarted: (value) {
-                setState(() {
-                  position = 1;
-                });
-              },
-              onPageFinished: (value) {
-                setState(() {
-                  position = 0;
-                });
-              },
-            ),
-            Center(
-              child: CircularProgressIndicator(),
-            ),
-          ],
-        ));
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            // 隱藏回上一頁
+            automaticallyImplyLeading: false,
+            title: Text('前去收信'),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  context.read<AuthRepository>().getCurrentUser.reload();
+                  Navigator.of(context).pushNamed(SplashScreen.routeName);
+                },
+                icon: Icon(Icons.close),
+              ),
+            ],
+          ),
+          body: IndexedStack(
+            index: position,
+            children: [
+              WebView(
+                javascriptMode: JavascriptMode.unrestricted,
+                initialUrl: 'https://google.com',
+                onWebViewCreated: (WebViewController webViewController) {
+                  _controller.complete(webViewController);
+                },
+                onPageStarted: (value) {
+                  setState(() {
+                    position = 1;
+                  });
+                },
+                onPageFinished: (value) {
+                  setState(() {
+                    position = 0;
+                  });
+                },
+              ),
+              Center(
+                child: CircularProgressIndicator(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
+import 'package:toeicking2021/repositories/auth/auth_repositories.dart';
+import 'package:toeicking2021/widgets/custom_elevated_button.dart';
 import 'package:toeicking2021/widgets/widgets.dart';
 
 import '../screens.dart';
@@ -6,18 +10,24 @@ import '../screens.dart';
 // 路由參數物件
 class VerificationScreenArgs {
   final email;
+  // final BuildContext passedContext;
 
-  const VerificationScreenArgs({@required this.email});
+  const VerificationScreenArgs({
+    @required this.email,
+    // @required this.passedContext,
+  });
 }
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = '/verification';
 
   final email;
+  // final BuildContext passedContext;
 
   const VerificationScreen({
     Key key,
     @required this.email,
+    // @required this.passedContext,
   }) : super(key: key);
   // 此方法回傳的Route物件，其實就是代表一個screen的抽象物件
   // 常見的子類別有MaterialPageRoute()或PageRouteBuilder()
@@ -29,7 +39,10 @@ class VerificationScreen extends StatelessWidget {
     // 2. builder-->屬性值型別為WidgetBuilder，回傳screen widget
     return MaterialPageRoute(
       settings: const RouteSettings(name: routeName),
-      builder: (_) => VerificationScreen(email: args.email),
+      builder: (_) => VerificationScreen(
+        email: args.email,
+        // passedContext: args.passedContext,
+      ),
     );
   }
 
@@ -37,54 +50,52 @@ class VerificationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('註冊結果'),
-          centerTitle: true,
-          // 隱藏回上一頁
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              onPressed: () {
-                // 導向Login Screen.
-                Navigator.of(context).pushNamed(LoginScreen.routeName);
-              },
-              icon: Icon(
-                Icons.home,
-              ),
-            ),
-          ],
-        ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CenteredText(
-                text: '您好，已寄送註冊驗證信至$email，請前往收信完成註冊程序。',
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              // 打開webview
-              ElevatedButton(
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(WebviewScreen.routeName),
-                style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
-                  onPrimary: Colors.white,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    '前去收信',
-                    style: TextStyle(fontSize: 17.0, letterSpacing: 1.0),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('寄出驗證信'),
+              centerTitle: true,
+              // 隱藏回上一頁
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    // 導向Login Screen.
+                    Navigator.of(context).pushNamed(LoginScreen.routeName);
+                  },
+                  icon: Icon(
+                    Icons.home,
                   ),
                 ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '請至$email收信完成註冊程序',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 16.0),
+                  ),
+                  SizedBox(
+                    height: 20.0,
+                  ),
+                  CustomElevatedButton(
+                    text: '前往收信',
+                    onPressed: () {
+                      // 打開webview
+                      Navigator.of(context).pushNamed(WebviewScreen.routeName);
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }

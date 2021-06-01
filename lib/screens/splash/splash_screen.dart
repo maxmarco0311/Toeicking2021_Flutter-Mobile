@@ -84,7 +84,10 @@ class _SplashScreenState extends State<SplashScreen>
             Navigator.of(context).pushNamed(
               VerificationScreen.routeName,
               // username要從firestore裡去撈
-              arguments: VerificationScreenArgs(email: state.user.email),
+              arguments: VerificationScreenArgs(
+                email: state.user.email,
+                // passedContext: context,
+              ),
             );
           }
         },

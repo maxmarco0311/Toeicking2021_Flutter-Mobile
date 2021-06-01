@@ -23,25 +23,28 @@ class NavScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('導航頁'),
-        centerTitle: true,
-        // 隱藏回上一頁
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            onPressed: () {
-              // 登出
-              context.read<AuthBloc>().add(AuthLogoutRequested());
-            },
-            icon: Icon(
-              Icons.logout,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('導航頁'),
+          centerTitle: true,
+          // 隱藏回上一頁
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              onPressed: () {
+                // 登出
+                context.read<AuthBloc>().add(AuthLogoutRequested());
+              },
+              icon: Icon(
+                Icons.logout,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        body: CenteredText(text: '進入導航頁'),
       ),
-      body: CenteredText(text: '進入導航頁'),
     );
   }
 }
