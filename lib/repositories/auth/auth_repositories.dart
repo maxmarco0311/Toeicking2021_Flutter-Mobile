@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:toeicking2021/config/paths.dart';
@@ -45,8 +44,9 @@ class AuthRepository extends BaseAuthRepository {
       //     // iOSBundleId: 'com.example.ios',
       //     handleCodeInApp: true);
       // await user.sendEmailVerification(actionCodeSettings);
+
+      // 寄出驗證信
       await user.sendEmailVerification();
-      await _firebaseAuth.currentUser.reload();
       _firebaseFirestore.collection(Paths.users).doc(user.uid).set({
         'username': username,
         'email': email,

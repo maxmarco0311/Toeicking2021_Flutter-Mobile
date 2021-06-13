@@ -77,7 +77,7 @@ class VerificationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '請至$email收信完成註冊程序',
+                    '請至$email收多益金驗證郵件以完成註冊程序',
                     textAlign: TextAlign.center,
                     style: const TextStyle(fontSize: 16.0),
                   ),

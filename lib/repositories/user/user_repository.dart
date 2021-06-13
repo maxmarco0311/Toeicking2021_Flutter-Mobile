@@ -13,18 +13,18 @@ class UserRepository extends BaseUserRepository {
 
   @override
   // 根據userId找出Firestore中的user物件資料，回傳承自訂user物件
-  Future<User> getUserWithId({@required String userId}) async {
+  Future<AuthUser> getUserWithId({@required String userId}) async {
     // doc(userId)回傳DocumentReference物件，get()回傳Future<DocumentSnapshot>
     // 用await即可取得該DocumentSnapshot物件
     // 再呼叫User.fromDocument(doc)即可裝成自訂user物件
     final doc =
         await _firebaseFirestore.collection(Paths.users).doc(userId).get();
-    return doc.exists ? User.fromDocument(doc) : User.empty;
+    return doc.exists ? AuthUser.fromDocument(doc) : AuthUser.empty;
   }
 
   @override
   // 根據自訂User物件更新Firestore中的user物件
-  Future<void> updateUser({@required User user}) async {
+  Future<void> updateUser({@required AuthUser user}) async {
     await _firebaseFirestore
         .collection(Paths.users)
         // 使用自訂User物件中的id屬性去找出DocumentReference
@@ -35,7 +35,7 @@ class UserRepository extends BaseUserRepository {
 
   @override
   // 搜尋user，參數為文字框輸入的文字
-  Future<List<User>> searchUsers({@required String query}) async {
+  Future<List<AuthUser>> searchUsers({@required String query}) async {
     final userSnap = await _firebaseFirestore
         .collection(Paths.users)
         // 條件查詢
@@ -45,7 +45,7 @@ class UserRepository extends BaseUserRepository {
         .get();
     // userSnap.docs回傳List<QueryDocumentSnapshot>
     // 利用map()方法將每一個QueryDocumentSnapshot換成User物件，並形成集合回傳
-    return userSnap.docs.map((doc) => User.fromDocument(doc)).toList();
+    return userSnap.docs.map((doc) => AuthUser.fromDocument(doc)).toList();
   }
 
   @override

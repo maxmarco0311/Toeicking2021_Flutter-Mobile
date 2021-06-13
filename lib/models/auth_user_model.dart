@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 // 自訂user類別
-class User extends Equatable {
+class AuthUser extends Equatable {
   // 來自Firebase user物件的id
   final String id;
   final String username;
@@ -14,7 +14,7 @@ class User extends Equatable {
   final int following;
   final String bio;
 
-  const User({
+  const AuthUser({
     @required this.id,
     @required this.username,
     @required this.email,
@@ -24,7 +24,7 @@ class User extends Equatable {
     @required this.bio,
   });
   // 空的User物件
-  static const empty = User(
+  static const empty = AuthUser(
     id: '',
     username: '',
     email: '',
@@ -45,7 +45,7 @@ class User extends Equatable {
         bio,
       ];
   // 在不同事件中，用來更新物件最新值的方法-->更新狀態
-  User copyWith({
+  AuthUser copyWith({
     String id,
     String username,
     String email,
@@ -54,7 +54,7 @@ class User extends Equatable {
     int following,
     String bio,
   }) {
-    return User(
+    return AuthUser(
       // 若傳入參數為空，就用原本物件屬性的值
       id: id ?? this.id,
       username: username ?? this.username,
@@ -82,13 +82,13 @@ class User extends Equatable {
 
   // 回傳此類別型別的物件-->使用"工廠多載"(也可用一般方法)
   // 將查出的Firestore Document物件(DocumentSnapshot)轉為自訂User物件
-  factory User.fromDocument(DocumentSnapshot doc) {
+  factory AuthUser.fromDocument(DocumentSnapshot doc) {
     // 如果找不到(doc == null)就回傳null
     if (doc == null) return null;
     // doc.data()才能取出一筆Document資料，新版本要轉型成Map<String, dynamic>
     final data = doc.data() as Map<String, dynamic>;
     // 裝回此類型物件(自訂user物件)
-    return User(
+    return AuthUser(
       // doc.id取得Document的id
       id: doc.id,
       username: data['username'] ?? '',

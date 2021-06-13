@@ -23,6 +23,7 @@ class NavScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // nav_screen不可回上一頁，否則又會跑到splash_screen
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
