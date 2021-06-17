@@ -55,7 +55,7 @@ class SentenceBundle extends Equatable {
     };
   }
 
-  // 參數map實質上為sourceMap[data][index]：
+  // 參數map實質上為sourceMap['data'][index]：
   // Map<String, dynamic> sourceMap = json.decode(response.body);
   // 1. response.body轉成Map後，資料都放在data屬性裡，所以要用sourceMap[data]
   // 2. data屬性裡的資料為List<Map<String, dynamic>>
@@ -65,21 +65,21 @@ class SentenceBundle extends Equatable {
   // 寫法1:
   // Map<String, dynamic> sourceMap = json.decode(response.body);
   // List<SentenceBundle> sentences = List<SentenceBundle>.from(
-  //   sourceMap[data]?.map(
+  //   sourceMap['data']?.map(
   //     (SentenceBundleMap) => SentenceBundle.fromMap(SentenceBundleMap),
   //   ),
   // );
   // 寫法2:
   // Map<String, dynamic> sourceMap = json.decode(response.body);
   // List<SentenceBundle> sentences = [];
-  // sourceMap[data].forEach((SentenceBundleMap)=> sentences.Add(SentenceBundle.fromMap(SentenceBundleMap)));
+  // sourceMap['data'].forEach((SentenceBundleMap)=> sentences.Add(SentenceBundle.fromMap(SentenceBundleMap)));
   factory SentenceBundle.fromMap(Map<String, dynamic> map) {
     return SentenceBundle(
       sentence: Sentence.fromMap(map['sentence']),
       vocabularies: List<Vocabulary>.from(
           map['vocabularies']?.map((x) => Vocabulary.fromMap(x))),
-      gas: List<GA>.from(map['gas']?.map((x) => GA.fromMap(x))),
-      vas: List<VA>.from(map['vas']?.map((x) => VA.fromMap(x))),
+      gas: List<GA>.from(map['gAs']?.map((x) => GA.fromMap(x))),
+      vas: List<VA>.from(map['vAs']?.map((x) => VA.fromMap(x))),
       normalAudioUrls: Map<String, String>.from(map['normalAudioUrls']),
       fastAudioUrls: Map<String, String>.from(map['fastAudioUrls']),
       slowAudioUrls: Map<String, String>.from(map['slowAudioUrls']),

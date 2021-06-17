@@ -1,4 +1,6 @@
+import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
@@ -6,12 +8,15 @@ import 'package:toeicking2021/config/custom_router.dart';
 import 'package:toeicking2021/repositories/auth/auth_repositories.dart';
 import 'package:toeicking2021/screens/screens.dart';
 
+import 'blocs/blocs.dart';
 import 'blocs/simple_bloc_observer.dart';
 import 'repositories/repositories.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // 全域設定stringify
+  EquatableConfig.stringify = kDebugMode;
   // 宣告自訂的SimpleBlocObserver()
   Bloc.observer = SimpleBlocObserver();
   runApp(MyApp());
@@ -28,12 +33,20 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<UserRepository>(
           create: (_) => UserRepository(),
         ),
+        RepositoryProvider<APIRepository>(
+          create: (_) => APIRepository(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthBloc>(
             create: (context) => AuthBloc(
               authRepository: context.read<AuthRepository>(),
+            ),
+          ),
+          BlocProvider<SentenceBundleBloc>(
+            create: (context) => SentenceBundleBloc(
+              apiRepository: context.read<APIRepository>(),
             ),
           ),
         ],
