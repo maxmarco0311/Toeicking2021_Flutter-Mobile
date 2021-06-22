@@ -64,12 +64,13 @@ class _SplashScreenState extends State<SplashScreen>
       onWillPop: () async => false,
       // BlocListener是用在針對狀態改變"執行功能"，而非渲染UI
       // ***在這裡註冊AuthBloc***
-      child: BlocListener<AuthBloc, AuthState>(
-        // ***如果AuthChanged狀態不變，就不要觸發BlocListener***
-        // ***開發測試時，沒有進入nav，無法logout，所以按按鈕前AuthChanged狀態還沒變***
-        // ***所以按下按鈕沒有反應(因為listener的callback不會執行，所以無法導向)***
+      // 若用BlocListener，導向時listener屬性值函式會被呼叫不只一次，所以頁面會閃兩次
+      // 改用BlocConsumer，導向時listener屬性值函式只會被呼叫一次，所以頁面正常
+      child: BlocConsumer<AuthBloc, AuthState>(
+        // (用BlocListener時)如果AuthChanged狀態不變，就不要觸發BlocListener的寫法如下：
         // listenWhen: (prevState, state) => prevState.status != state.status,
-
+        // ***問題是開發測試時，沒有進入nav，無法logout，所以按按鈕前AuthChanged狀態還沒變***
+        // ***所以按下按鈕沒有反應(因為listener的callback不會執行，所以無法導向)***
         listener: (context, state) {
           if (state.status == AuthStatus.unauthenticated) {
             // 導向Login Screen.
@@ -83,15 +84,15 @@ class _SplashScreenState extends State<SplashScreen>
             // 註冊後但尚未驗證Email，導向一個頁面通知使用者去驗證Email
             Navigator.of(context).pushNamed(
               VerificationScreen.routeName,
-              // username要從firestore裡去撈
               arguments: VerificationScreenArgs(
+                // username要從firestore裡去撈
                 email: state.user.email,
                 // passedContext: context,
               ),
             );
           }
         },
-        child: const Scaffold(
+        builder: (context, state) => const Scaffold(
           body: Center(
             child: CircularProgressIndicator(),
           ),

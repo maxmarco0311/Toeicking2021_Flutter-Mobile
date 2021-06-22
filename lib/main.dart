@@ -1,3 +1,4 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
 import 'package:toeicking2021/config/custom_router.dart';
+import 'package:toeicking2021/cubits/cubits.dart';
 import 'package:toeicking2021/repositories/auth/auth_repositories.dart';
 import 'package:toeicking2021/screens/screens.dart';
 
@@ -19,6 +21,11 @@ void main() async {
   EquatableConfig.stringify = kDebugMode;
   // 宣告自訂的SimpleBlocObserver()
   Bloc.observer = SimpleBlocObserver();
+  // 設定背景播放的notification
+  AssetsAudioPlayer.setupNotificationsOpenAction((notification) {
+    print(notification.audioId);
+    return true;
+  });
   runApp(MyApp());
 }
 
@@ -48,6 +55,9 @@ class MyApp extends StatelessWidget {
             create: (context) => SentenceBundleBloc(
               apiRepository: context.read<APIRepository>(),
             ),
+          ),
+          BlocProvider<AudioSettingCubit>(
+            create: (context) => AudioSettingCubit(),
           ),
         ],
         child: MaterialApp(

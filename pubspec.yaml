@@ -26,7 +26,7 @@ dependencies:
   
   cupertino_icons: ^1.0.2
 
-  cached_network_image: ^2.4.1
+  # cached_network_image: ^2.4.1
   enum_to_string: ^1.0.14
   equatable: ^2.0.0 
 
@@ -47,10 +47,12 @@ dependencies:
   webview_flutter: ^2.0.7
   http: ^0.13.0
 
+  assets_audio_player: ^3.0.3+3
+
   intl: ^0.17.0
   meta: ^1.2.4
   timeago: ^2.0.29
-  uuid: ^2.2.2
+  uuid: ^3.0.1
 
 dev_dependencies:
   flutter_test:

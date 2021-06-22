@@ -39,7 +39,8 @@ android {
         applicationId "com.example.toeicking2021"
         // Android使用Firebase的必要設定：
         // 1. 這裡要改成21
-        minSdkVersion 21
+        // 2. audio_player要改成23
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
