@@ -29,6 +29,8 @@ class CustomRouter {
         return NavScreen.route();
       case WebviewScreen.routeName:
         return WebviewScreen.route();
+      case DetailScreen.routeName:
+        return DetailScreen.route(args: settings.arguments);
       default:
         return _errorRoute();
     }

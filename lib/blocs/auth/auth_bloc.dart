@@ -50,7 +50,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Stream<AuthState> _mapAuthUserChangedToState(AuthUserChanged event) async* {
-    // yield表回傳這個stream中的一個值
+    // yield表回傳這個stream中的一個State物件(也就是觸發一個事件，就像在一般方法裡使用add(事件))
     // yield event.user != null
     //     ? AuthState.authenticated(user: event.user)
     //     : AuthState.unauthenticated();
