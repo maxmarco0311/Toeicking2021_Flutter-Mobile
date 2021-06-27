@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:toeicking2021/models/models.dart';
+import 'package:toeicking2021/screens/detail/detail.dart';
 
 class SentenceTile extends StatelessWidget {
   final SentenceBundle sentenceBundle;
@@ -31,7 +32,12 @@ class SentenceTile extends StatelessWidget {
           title: Text('${sentenceBundle.sentence.sen}'),
           subtitle: Text('${sentenceBundle.sentence.chinesese}'),
           trailing: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(
+                DetailScreen.routeName,
+                arguments: DetailScreenArgs(sentenceBundle: sentenceBundle),
+              );
+            },
             icon: Icon(Icons.arrow_forward_ios),
           ),
           // 點按ListTile
