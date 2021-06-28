@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 
+import 'package:toeicking2021/cubits/audio_setting/audio_setting_cubit.dart';
+import 'package:toeicking2021/utilities/time_string.dart';
+import 'package:toeicking2021/utilities/utilities.dart';
+
 class Player extends StatefulWidget {
   // 需要從Parent Widget傳進的資料
   final String sentenceId;
@@ -11,6 +15,7 @@ class Player extends StatefulWidget {
   final int repeatedTimes;
   // 更新播放的函式(打開bottom sheet)
   final VoidCallback onSetting;
+  final AudioSettingState state;
 
   const Player({
     Key key,
@@ -18,6 +23,7 @@ class Player extends StatefulWidget {
     @required this.url,
     @required this.onSetting,
     this.repeatedTimes,
+    this.state,
   }) : super(key: key);
 
   @override
@@ -34,45 +40,18 @@ class _PlayerState extends State<Player> {
   StreamSubscription _positionSubscription;
   StreamSubscription _playerFinishSubscription;
   StreamSubscription _playerStateSubscription;
+  // getter也可以設定回傳值型別，此處呼叫自訂utilities方法回傳時間字串
+  // 取得歌曲時間字串
+  String get _durationText => TimeString.formatLessHour(_duration);
+  // 取得目前已播放時間字串
+  String get _positionText => TimeString.formatLessHour(_position);
 
-  get _durationText {
-    String finalText;
-    String minutePart =
-        _duration?.toString()?.split('.')?.first?.split(':')?.elementAt(1) ??
-            '';
-    if (minutePart != null && minutePart.length > 0) {
-      if (minutePart.substring(0, 1) == '0') {
-        minutePart = minutePart.substring(1);
-      }
-    }
-
-    String secondPart =
-        _duration?.toString()?.split('.')?.first?.split(':')?.elementAt(2) ??
-            '';
-    finalText = '$minutePart:$secondPart';
-    return finalText ?? '';
-  }
-
-  get _positionText {
-    String finalText;
-    String minutePart =
-        _position?.toString()?.split('.')?.first?.split(':')?.elementAt(1) ??
-            '';
-    if (minutePart != null && minutePart.length > 0) {
-      if (minutePart.substring(0, 1) == '0') {
-        minutePart = minutePart.substring(1);
-      }
-    }
-    String secondPart =
-        _position?.toString()?.split('.')?.first?.split(':')?.elementAt(2) ??
-            '';
-    finalText = '$minutePart:$secondPart';
-    return finalText ?? '';
-  }
-
+  // initState()不可以是同步方法
   @override
   void initState() {
     super.initState();
+    // 當中所呼叫的方法也不可以是同步方法
+    // 若其中真的需要用同步方法，也要另外包成方法呼叫，不可以直接寫在裡面
     _initAssetAudioPlayer();
   }
 
@@ -89,100 +68,107 @@ class _PlayerState extends State<Player> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        // 如果要設decoration屬性，就得把color屬性放進BoxDecoration()裡，否則會報錯
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
+      padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 20.0),
+      // color記得要跟header一樣
+      color: Colors.grey.shade200,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: Column(
+          children: [
+            // 第一排：播放設定
+            Row(
+              // MainAxisAlignment.spaceAround左右兩邊不會貼太緊
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // imageUrl: 'assets/images/restaurant4.jpg',
+                Image(
+                  height: 30.0,
+                  width: 30.0,
+                  image: AssetImage('assets/images/test.jpg'),
+                ),
+                // Text('美國腔'),
+                Text('男聲'),
+                Text('語速(1.0x)'),
+                widget.repeatedTimes != null
+                    ? Text('重複播放${widget.repeatedTimes - playedTimes}次')
+                    : Text('重複播放0次'),
+                TextButton(
+                  onPressed: widget.onSetting,
+                  child: Text('播放設定'),
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      primary: Theme.of(context).primaryColor),
+                ),
+              ],
+            ),
+            // 第二排：slider
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  _positionText != null ? _positionText : '',
+                  // Color(0xFFFFFFFF).withOpacity(0.5)
+                  style: TextStyle(color: Colors.black),
+                ),
+                Expanded(
+                  child: Slider.adaptive(
+                    activeColor: Theme.of(context).primaryColor,
+                    inactiveColor: Colors.grey[350],
+                    value: (_position != null &&
+                            _duration != null &&
+                            _position.inMilliseconds > 0 &&
+                            _position.inMilliseconds < _duration.inMilliseconds)
+                        ? _position.inMilliseconds / _duration.inMilliseconds
+                        : 0.0,
+                    onChanged: (newValue) {
+                      final position = newValue * _duration.inMilliseconds;
+                      _assetsAudioPlayer.seek(
+                        Duration(
+                          milliseconds: position.round(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                Text(
+                  // 有時候stream觸發的比較慢，會顯示':'字串，要做預防措施才不會顯示出來
+                  _durationText != null && _durationText != ':'
+                      ? _durationText
+                      : '',
+                  style: TextStyle(color: Colors.black),
+                ),
+              ],
+            ),
+            // 第三排：播放按鈕
+            // 如果是PlayerState.stop或PlayerState.pause，顯示PLAY按鈕，執行_play函式
+            _playerState == PlayerState.stop ||
+                    _playerState == PlayerState.pause
+                ? IconButton(
+                    // 去掉padding
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.play_arrow,
+                      size: 40.0,
+                    ),
+                    onPressed: _play,
+                  )
+                : IconButton(
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      Icons.pause,
+                      size: 40.0,
+                    ),
+                    onPressed: _pause,
+                  ),
+          ],
         ),
-      ),
-      child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // 第一排：播放設定
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('美國腔'),
-                    Text('男聲'),
-                    Text('正常(1.0x)'),
-                    widget.repeatedTimes != null
-                        ? Text('重複播放${widget.repeatedTimes - playedTimes}次')
-                        : Text('重複播放0次'),
-                  ],
-                ),
-              ),
-              TextButton(
-                onPressed: widget.onSetting,
-                child: Text('播放設定'),
-                style: TextButton.styleFrom(
-                    primary: Theme.of(context).primaryColor),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          // 第二排：slider
-          Slider.adaptive(
-            activeColor: Theme.of(context).primaryColor,
-            inactiveColor: Colors.grey[350],
-            value: (_position != null &&
-                    _duration != null &&
-                    _position.inMilliseconds > 0 &&
-                    _position.inMilliseconds < _duration.inMilliseconds)
-                ? _position.inMilliseconds / _duration.inMilliseconds
-                : 0.0,
-            onChanged: (newValue) {
-              final position = newValue * _duration.inMilliseconds;
-              _assetsAudioPlayer.seek(
-                Duration(
-                  milliseconds: position.round(),
-                ),
-              );
-            },
-          ),
-          SizedBox(
-            height: 5.0,
-          ),
-          // 第三排：時間文字
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                _positionText != null ? _positionText : SizedBox.shrink(),
-                // Color(0xFFFFFFFF).withOpacity(0.5)
-                style: TextStyle(color: Colors.black),
-              ),
-              Text(
-                _durationText != null ? _durationText : SizedBox.shrink(),
-                style: TextStyle(color: Colors.black),
-              ),
-            ],
-          ),
-          // 第四排：播放按鈕
-          // 如果是PlayerState.stop或PlayerState.pause，顯示PLAY按鈕，執行_play函式
-          _playerState == PlayerState.stop || _playerState == PlayerState.pause
-              ? IconButton(
-                  icon: Icon(Icons.play_circle_filled_outlined),
-                  onPressed: _play,
-                )
-              : IconButton(
-                  icon: Icon(Icons.pause_circle_filled_outlined),
-                  onPressed: _pause,
-                ),
-        ],
       ),
     );
   }
 
   // 初始化AssetsAudioPlayer物件
   void _initAssetAudioPlayer() {
+    print('init called');
     // 宣告一個空的AssetsAudioPlayer物件
     _assetsAudioPlayer = AssetsAudioPlayer();
 
@@ -193,6 +179,7 @@ class _PlayerState extends State<Player> {
         _duration = playingAudio.audio.duration;
       });
     });
+    print('_durationText=\'$_durationText\'');
     // 獲得歌曲總長的自訂方法
     _getDuration();
     // 監聽"目前已播放時間"的stream，傳入一個Duration物件
@@ -228,40 +215,46 @@ class _PlayerState extends State<Player> {
 
   // 獲得歌曲時間的方法(先播放觸發stream後立刻stop)
   Future<void> _getDuration() async {
-    // 如果是PlayerState.stop
-    if (_playerState == PlayerState.stop) {
-      // 開始播放歌曲，才會觸發_assetsAudioPlayer.current這個stream，才能獲得歌曲時間
-      await _assetsAudioPlayer.open(
-        Audio.network(widget.url),
-      );
-      // 觸發stream後立刻呼叫_stop()，歌曲才不會真的播放
-      _stop();
+    // 檢查url字串不為空
+    if (widget.url != null) {
+      // 檢查PlayerState.stop
+      if (_playerState == PlayerState.stop) {
+        // 開始播放歌曲，才會觸發_assetsAudioPlayer.current這個stream，才能獲得歌曲時間
+        await _assetsAudioPlayer.open(
+          Audio.network(widget.url),
+        );
+        // 觸發stream後立刻呼叫_stop()，歌曲才不會真的播放
+        _stop();
+      }
     }
   }
 
   // 播放
   Future<void> _play() async {
-    // 如果是PlayerState.stop
-    if (_playerState == PlayerState.stop) {
-      // 開始播放歌曲
-      await _assetsAudioPlayer.open(
-        Audio.network(
-          widget.url,
-          metas: Metas(
-            id: widget.sentenceId,
-            title: '多益必考金句${widget.sentenceId}',
-            artist: 'Max Ching',
-            album: '多益金聽力訓練',
-            image: MetasImage.asset('path'),
+    // 檢查url字串不為空
+    if (widget.url != null) {
+      // 如果是PlayerState.stop
+      if (_playerState == PlayerState.stop) {
+        // 開始播放歌曲
+        await _assetsAudioPlayer.open(
+          Audio.network(
+            widget.url,
+            metas: Metas(
+              id: widget.sentenceId,
+              title: '多益必考金句${widget.sentenceId}',
+              artist: 'Max Ching',
+              album: '多益金聽力訓練',
+              image: MetasImage.asset('path'),
+            ),
           ),
-        ),
-        showNotification: true,
-      );
-    }
-    // 如果是PlayerState.pause
-    if (_playerState == PlayerState.pause) {
-      // 繼續播放
-      await _assetsAudioPlayer.play();
+          showNotification: true,
+        );
+      }
+      // 如果是PlayerState.pause
+      if (_playerState == PlayerState.pause) {
+        // 繼續播放
+        await _assetsAudioPlayer.play();
+      }
     }
   }
 
