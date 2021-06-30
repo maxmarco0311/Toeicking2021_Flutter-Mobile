@@ -94,9 +94,9 @@ class _DetailScreenState extends State<DetailScreen> {
             children: [
               // 使用SizedBox()包住chidren widget，並設定高度後是去掉原有padding的方式
               SizedBox(
-                height: 50.0,
+                height: 45.0,
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
+                  padding: const EdgeInsets.only(top: 8.0),
                   child: isArrowDown
                       ? IconButton(
                           padding: EdgeInsets.zero,
@@ -131,7 +131,8 @@ class _DetailScreenState extends State<DetailScreen> {
               url: _getUrlBySetting(state),
               // 要把顯示bottomsheet的callback function傳給Player()
               onSetting: _showAudioSetting(context, state),
-              // repeatedTimes: 5,
+              // 傳入state
+              state: state,
             );
           },
         ),
@@ -163,8 +164,22 @@ class _DetailScreenState extends State<DetailScreen> {
   VoidCallback _showAudioSetting(
       BuildContext context, AudioSettingState state) {
     final cubit = context.read<AudioSettingCubit>();
+    // 回傳callback function(VoidCallback型別)
     return () {
       showModalBottomSheet(
+        enableDrag: true,
+        // 鍵盤不擋住bottom sheet的步驟：
+        // 1. 設此屬性
+        isScrollControlled: true,
+        // 點按不能關bottom sheet
+        // isDismissible: false,
+        // 圓角用RoundedRectangleBorder()就好
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
         context: context,
         builder: (_) => BottomSheetContent(
           context: context,

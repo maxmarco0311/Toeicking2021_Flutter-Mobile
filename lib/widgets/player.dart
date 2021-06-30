@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:toeicking2021/cubits/audio_setting/audio_setting_cubit.dart';
 import 'package:toeicking2021/utilities/time_string.dart';
 import 'package:toeicking2021/utilities/utilities.dart';
+import 'package:toeicking2021/utilities/value_handler.dart';
 
 class Player extends StatefulWidget {
   // 需要從Parent Widget傳進的資料
   final String sentenceId;
   // url在PrentWidget時透過AudioSettingState裡的值確定(腔調、性別、語速都在url裡)
   final String url;
-  final int repeatedTimes;
   // 更新播放的函式(打開bottom sheet)
   final VoidCallback onSetting;
   final AudioSettingState state;
@@ -22,8 +22,7 @@ class Player extends StatefulWidget {
     @required this.sentenceId,
     @required this.url,
     @required this.onSetting,
-    this.repeatedTimes,
-    this.state,
+    @required this.state,
   }) : super(key: key);
 
   @override
@@ -50,6 +49,7 @@ class _PlayerState extends State<Player> {
   @override
   void initState() {
     super.initState();
+    print(widget.state == null);
     // 當中所呼叫的方法也不可以是同步方法
     // 若其中真的需要用同步方法，也要另外包成方法呼叫，不可以直接寫在裡面
     _initAssetAudioPlayer();
@@ -62,6 +62,7 @@ class _PlayerState extends State<Player> {
     _positionSubscription?.cancel();
     _playerFinishSubscription?.cancel();
     _playerStateSubscription?.cancel();
+
     super.dispose();
   }
 
@@ -84,13 +85,19 @@ class _PlayerState extends State<Player> {
                 Image(
                   height: 30.0,
                   width: 30.0,
-                  image: AssetImage('assets/images/test.jpg'),
+                  image: AssetImage(
+                    ValueHandler.toAccentImageUrl(widget.state.accent),
+                  ),
                 ),
                 // Text('美國腔'),
-                Text('男聲'),
-                Text('語速(1.0x)'),
-                widget.repeatedTimes != null
-                    ? Text('重複播放${widget.repeatedTimes - playedTimes}次')
+                Text(
+                  ValueHandler.toGenderString(widget.state.gender),
+                ),
+                Text(
+                  ValueHandler.toRateString(widget.state.rate),
+                ),
+                widget.state.repeatedTimes != null
+                    ? Text('重複播放${widget.state.repeatedTimes - playedTimes}次')
                     : Text('重複播放0次'),
                 TextButton(
                   onPressed: widget.onSetting,
@@ -192,7 +199,7 @@ class _PlayerState extends State<Player> {
     // 監聽"播放狀態"的stream，傳入一個PlayerState物件
     _playerStateSubscription =
         _assetsAudioPlayer.playerState.listen((playState) {
-      // 這裡setState()就好了
+      // 這裡setState()就好了，其他地方不需要再設定PlayerState
       setState(() {
         _playerState = playState;
       });
@@ -202,11 +209,11 @@ class _PlayerState extends State<Player> {
         _assetsAudioPlayer.playlistAudioFinished.listen((playingAudio) {
       _stop();
       // 重複播放在這裡實作
-      if (widget.repeatedTimes != null) {
-        if (playedTimes < widget.repeatedTimes) {
+      if (widget.state.repeatedTimes != null) {
+        if (playedTimes < widget.state.repeatedTimes) {
           _play();
           playedTimes++;
-          print('repeatedTimes:${widget.repeatedTimes}');
+          print('repeatedTimes:${widget.state.repeatedTimes}');
           print('playedTimes:$playedTimes');
         }
       }

@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 class CustomElevatedButton extends StatelessWidget {
   final String text;
   final Function onPressed;
+  final EdgeInsetsGeometry edgeInset;
+  final double fontSize;
 
   const CustomElevatedButton({
     Key key,
+    @required this.fontSize,
+    @required this.edgeInset,
     @required this.text,
     @required this.onPressed,
   }) : super(key: key);
@@ -19,10 +23,10 @@ class CustomElevatedButton extends StatelessWidget {
         onPrimary: Colors.white,
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: edgeInset,
         child: Text(
           text,
-          style: TextStyle(fontSize: 17.0, letterSpacing: 1.0),
+          style: TextStyle(fontSize: fontSize, letterSpacing: 1.0),
         ),
       ),
     );

@@ -90,6 +90,8 @@ class VerificationScreen extends StatelessWidget {
                       // 打開webview
                       Navigator.of(context).pushNamed(WebviewScreen.routeName);
                     },
+                    edgeInset: const EdgeInsets.all(8.0),
+                    fontSize: 17.0,
                   ),
                 ],
               ),
