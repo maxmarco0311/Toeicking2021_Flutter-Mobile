@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:toeicking2021/cubits/audio_setting/audio_setting_cubit.dart';
@@ -22,23 +24,33 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
   String genderSelectedValue;
   String rateSelectedValue;
   String accentSelectedValue;
+  // 替文字框設預設值和清除文字框要用
   TextEditingController _controller;
+  // 使用validate()方法
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  // 專門用來調整validation message出現後，文字框旁邊padding用的變數
   bool isValidated = false;
+  // 用來更新state裡面的statusStreamController，因此型別要一樣
+  StreamController<Status> _statusStreamController;
   @override
   void initState() {
+    // radio button獲得預設值
     genderSelectedValue = widget.state.gender;
     rateSelectedValue = widget.state.rate;
     accentSelectedValue = widget.state.accent;
-    // 這樣文字框就有預設值
+    // (從state獲得)文字框獲得預設值的方法(不能跟initialValue同時用)
     _controller =
         TextEditingController(text: (widget.state.repeatedTimes).toString());
+    // 獲得state中現有的statusStreamController，否則此頁的_statusStreamController會是null
+    _statusStreamController = widget.state.statusStreamController;
     super.initState();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    //  呼叫close，程式邏輯會報錯(不是編譯報錯)
+    // _statusStreamController.close();
     super.dispose();
   }
 
@@ -47,7 +59,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
     return GestureDetector(
       // 點按Container()鍵盤就會離開
       onTap: () {
-        // // 每個欄位恢復初始值，防止使用者沒通過驗證就把bottom sheet關掉，會有排版問題
+        // 每個欄位恢復初始值，防止使用者沒通過驗證就把bottom sheet關掉，會有排版問題
         // _formKey.currentState.reset();
         // FocusScope.of(context).unfocus();
         // 或限制驗證沒通過就不能鍵盤離開
@@ -134,7 +146,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                       ),
                       // ListView若是child widgte外面必包Expanded()
                       // 其parent widget外也要包Container()
-                      // 且指定高度(給橫向ListView)、指定寬度(給縱向ListView)
+                      // 且指定height(給橫向ListView)、指定寬度width(給縱向ListView)
                       Expanded(
                         child: ListView(
                           scrollDirection: Axis.horizontal,
@@ -161,7 +173,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 為了要在出現錯誤訊息時可置中對齊
+                      // 為了要在出現錯誤訊息時文字和文字框都可置中對齊
                       // 只好在文字外包一個container
                       // 出現錯誤訊息時(isValidated=true)就出現下方的padding，也往上推
                       Container(
@@ -208,13 +220,15 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                             validator: (input) {
                               // 轉型成int做檢查
                               final isDigitsOnly = int.tryParse(input);
-                              // 數字出現100要報錯誤訊息
+                              // 不是數字以及數字大於100要報錯誤訊息
                               if (isDigitsOnly == null || isDigitsOnly > 100) {
                                 setState(() => isValidated = true);
-                                isValidated = true;
+                                // isValidated = true;
+                                // 錯誤訊息
                                 return '必需輸入數字0~100';
                               } else {
                                 setState(() => isValidated = false);
+                                // 沒有錯誤訊息
                                 return null;
                               }
                             },
@@ -223,7 +237,12 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                               if (_formKey.currentState.validate()) {
                                 // 改變狀態
                                 widget.cubit.updateRepeatedTimes(
-                                    repeatedTimes: int.tryParse(value));
+                                  repeatedTimes: int.tryParse(value),
+                                  status: Status.repeatedTimesUpdate,
+                                  // 將此頁的_statusStreamController傳進state裡更新
+                                  statusStreamController:
+                                      _statusStreamController,
+                                );
                               }
                             },
                           ),
@@ -237,12 +256,18 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                   child: CustomElevatedButton(
                     text: '設定完成',
                     onPressed: () {
-                      // // 每個欄位恢復初始值，防止使用者沒通過驗證就把bottom sheet關掉，會有排版問題
+                      // 每個欄位恢復初始值，防止使用者沒通過驗證就把bottom sheet關掉，會有排版問題
                       // _formKey.currentState.reset();
                       // Navigator.of(context).pop();
-                      // 或限制驗證沒通過就不能關閉bottom sheet
+                      // 限制驗證沒通過就不能關閉bottom sheet
                       if (isValidated == false) {
                         Navigator.of(context).pop();
+                        // 也呼叫更新重複播放次數的cubit方法
+                        widget.cubit.updateRepeatedTimes(
+                          repeatedTimes: int.tryParse(_controller.text),
+                          status: Status.repeatedTimesUpdate,
+                          statusStreamController: _statusStreamController,
+                        );
                       }
                     },
                     edgeInset: const EdgeInsets.symmetric(
@@ -261,16 +286,21 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
   Widget _buildGenderRadioButtonSet({String genderValue, String label}) {
     return Row(
       children: [
+        // 放大radio button
         Transform.scale(
           scale: kRadioButtonScale,
           child: Radio<String>(
             value: genderValue,
             groupValue: genderSelectedValue,
-            // 選中時會觸發，傳入value屬性值
+            // 選中時會觸發，傳入參數為value屬性值(genderValue)
             onChanged: (value) {
               // 將value屬性值賦值給groupValue屬性值，即會呈現選中
               setState(() => genderSelectedValue = value);
-              widget.cubit.updateGender(gender: value);
+              // 更改state狀態
+              widget.cubit.updateGender(
+                  gender: value,
+                  status: Status.genderUpdate,
+                  statusStreamController: _statusStreamController);
             },
           ),
         ),
@@ -292,7 +322,10 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
             groupValue: rateSelectedValue,
             onChanged: (value) {
               setState(() => rateSelectedValue = value);
-              widget.cubit.updateRate(rate: value);
+              widget.cubit.updateRate(
+                  rate: value,
+                  status: Status.rateUpdate,
+                  statusStreamController: _statusStreamController);
             },
           ),
         ),
@@ -314,7 +347,10 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
             groupValue: accentSelectedValue,
             onChanged: (value) {
               setState(() => accentSelectedValue = value);
-              widget.cubit.updateAccent(accent: value);
+              widget.cubit.updateAccent(
+                  accent: value,
+                  status: Status.accentUpdate,
+                  statusStreamController: _statusStreamController);
             },
           ),
         ),

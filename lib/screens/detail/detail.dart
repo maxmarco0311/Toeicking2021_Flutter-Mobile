@@ -40,9 +40,9 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
-  // ExpandableBottomSheetStaten所需的key
-  GlobalKey<ExpandableBottomSheetState> key = GlobalKey();
-  // 判斷箭頭圖示
+  // ExpandableBottomSheetStaten所需的key，才可呼叫一些方法
+  GlobalKey<ExpandableBottomSheetState> _key = GlobalKey();
+  // 判斷箭頭圖示用的變數
   bool isArrowDown = true;
 
   @override
@@ -55,32 +55,32 @@ class _DetailScreenState extends State<DetailScreen> {
       // ExpandableBottomSheet()物件要放在body屬性值
       body: ExpandableBottomSheet(
         // 要有key
-        key: key,
+        key: _key,
         // 下拉"到底"會觸發的callback
-        onIsContractedCallback: () => setState(() {
-          isArrowDown = false;
-        }),
+        onIsContractedCallback: () => setState(() => isArrowDown = false),
         // 上拉"到底"會觸發的callback
-        onIsExtendedCallback: () => setState(() {
-          isArrowDown = true;
-        }),
+        onIsExtendedCallback: () => setState(() => isArrowDown = true),
         // 點按header會toggle
         enableToggle: true,
-        // background屬性值是此頁"非上下拉部份"的widget
+        // background屬性值(必備)是此頁"非上下拉部份"的widget
         background: Column(
           children: [
+            // ListView()為Column()的child一定要外包Expanded()
             Expanded(
               child: ListView(
                 children: [
+                  // 至少要先有一個children widget
                   Container(),
                 ],
               ),
             ),
           ],
         ),
-        // header部份的widget
+        // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)
         persistentHeader: Container(
+          // 會影響divider左右兩邊與螢幕的距離
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          // 圓角外型
           decoration: BoxDecoration(
             // 如果要設decoration屬性，就得把color屬性放進BoxDecoration()裡，否則會報錯
             color: Colors.grey.shade200,
@@ -96,7 +96,9 @@ class _DetailScreenState extends State<DetailScreen> {
               SizedBox(
                 height: 45.0,
                 child: Padding(
+                  // 調整箭頭上下
                   padding: const EdgeInsets.only(top: 8.0),
+                  // 用isArrowDown判斷要顯示向上或向下的箭頭
                   child: isArrowDown
                       ? IconButton(
                           padding: EdgeInsets.zero,
@@ -104,7 +106,8 @@ class _DetailScreenState extends State<DetailScreen> {
                             Icons.keyboard_arrow_down,
                             size: 40.0,
                           ),
-                          onPressed: () => key.currentState.contract(),
+                          // 向下箭頭點按後會收合到底(會觸發onIsContractedCallback)
+                          onPressed: () => _key.currentState.contract(),
                         )
                       : IconButton(
                           padding: EdgeInsets.zero,
@@ -112,7 +115,8 @@ class _DetailScreenState extends State<DetailScreen> {
                             Icons.keyboard_arrow_up,
                             size: 40.0,
                           ),
-                          onPressed: () => key.currentState.expand(),
+                          // 向上箭頭點按後會展開到最大((會觸發onIsExtendedCallback))
+                          onPressed: () => _key.currentState.expand(),
                         ),
                 ),
               ),
@@ -123,17 +127,28 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
           ),
         ),
-        // 可收合部份的widget
+        // expandableContent是必要屬性：為可收合部份的widget-->player
+        // 靠BlocBuilder重繪
         expandableContent: BlocBuilder<AudioSettingCubit, AudioSettingState>(
           builder: (context, state) {
-            return Player(
-              sentenceId: '${widget.sentenceBundle.sentence.sentenceId}',
-              url: _getUrlBySetting(state),
-              // 要把顯示bottomsheet的callback function傳給Player()
-              onSetting: _showAudioSetting(context, state),
-              // 傳入state
-              state: state,
-            );
+            // 取得cubit
+            final cubit = context.read<AudioSettingCubit>();
+            // 沒有錯誤就顯示Player
+            if (state.status != Status.failure) {
+              return Player(
+                sentenceId: '${widget.sentenceBundle.sentence.sentenceId}',
+                url: _getUrlBySetting(state),
+                // 要把顯示bottomsheet的callback function(型別為VoidCallback)傳給Player()
+                onSetting: _showAudioSetting(context, state),
+                // 傳入state與cubit
+                state: state,
+                cubit: cubit,
+              );
+            } else {
+              return Center(
+                child: Text('錯誤'),
+              );
+            }
           },
         ),
       ),
@@ -163,9 +178,11 @@ class _DetailScreenState extends State<DetailScreen> {
   // 打開ModalBottomSheet的方法
   VoidCallback _showAudioSetting(
       BuildContext context, AudioSettingState state) {
+    // 取得cubit
     final cubit = context.read<AudioSettingCubit>();
     // 回傳callback function(VoidCallback型別)
     return () {
+      // 內建打開bottom sheet的方法
       showModalBottomSheet(
         enableDrag: true,
         // 鍵盤不擋住bottom sheet的步驟：
@@ -173,14 +190,16 @@ class _DetailScreenState extends State<DetailScreen> {
         isScrollControlled: true,
         // 點按不能關bottom sheet
         // isDismissible: false,
-        // 圓角用RoundedRectangleBorder()就好
+        // 圓角外型用RoundedRectangleBorder()就好
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20.0),
             topRight: Radius.circular(20.0),
           ),
         ),
+        // 兩個必備屬性
         context: context,
+        // 不需要用builder的context
         builder: (_) => BottomSheetContent(
           context: context,
           state: state,
