@@ -34,7 +34,7 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> {
-  // 所有該頁狀態變數
+  // 所有該頁狀態變數：
   // 1. 播放用的player
   AssetsAudioPlayer _assetsAudioPlayer;
   // 2. 取得duration用的player
@@ -57,12 +57,14 @@ class _PlayerState extends State<Player> {
   StreamSubscription _playerStateSubscription;
   // 11. 監聽自訂播放設定update時stream的訂閱物件
   StreamSubscription _audioSettingStatusSubscription;
-  // 12. 控制重複播放第一次必須是按play鍵的變數
+  // 12. 控制設定重複播放後第一次播放必須是按play鍵的變數
   bool _holdPlay = false;
+  // // 13. 控制進入player頁面時重複播放次數大於0時不直接播放的變數
+  bool _initPlay = false;
   // getter也可以設定回傳值型別，此處呼叫自訂utilities方法回傳時間字串
-  // 取得歌曲時間字串
+  // 14. 取得歌曲時間字串
   String get _durationText => TimeString.formatLessHour(_duration);
-  // 取得目前已播放時間字串
+  // 15. 取得目前已播放時間字串
   String get _positionText => TimeString.formatLessHour(_position);
 
   // initState()不可以是同步方法
@@ -190,6 +192,7 @@ class _PlayerState extends State<Player> {
                           _holdPlay = false;
                           // 重複播放的第一次播放，播放次數加1
                           _playedTimes++;
+                          _initPlay = true;
                         });
                       }
                     },
@@ -210,19 +213,20 @@ class _PlayerState extends State<Player> {
 
   // 初始化AssetsAudioPlayer物件
   void _initAssetAudioPlayer() {
+    print('init called!');
     // 播放用的AssetsAudioPlayer物件
     _assetsAudioPlayer = AssetsAudioPlayer();
     // 偷跑一次open()獲得duration用的AssetsAudioPlayer物件
     _anotherAudioPlayer = AssetsAudioPlayer();
     // 監聽"_anotherAudioPlayer""目前播放歌曲"的stream，傳入一個playing物件
     _durationSubscription = _anotherAudioPlayer.current.listen((playingAudio) {
+      print('current stream trigger!');
       setState(() {
         // 取得歌曲總長(Duration物件)
         _duration = playingAudio.audio.duration;
       });
+      print('duration:$_duration');
     });
-    // 獲得歌曲總長的自訂方法
-    _getDuration();
     // 監聽"目前已播放時間"的stream，傳入一個Duration物件
     _positionSubscription =
         _assetsAudioPlayer.currentPosition.listen((position) {
@@ -230,6 +234,8 @@ class _PlayerState extends State<Player> {
         _position = position;
       });
     });
+    // 獲得歌曲總長的自訂方法
+    _getDuration();
     // 監聽"播放狀態"的stream，傳入一個PlayerState物件
     _playerStateSubscription =
         _assetsAudioPlayer.playerState.listen((playState) {
@@ -248,13 +254,22 @@ class _PlayerState extends State<Player> {
             // 所以要用_holdPlay控制是否播放
             // 該變數初始化時是false，更新重複播放次數時變true，按下play後再變成false
             // 這樣設條件目的是設定重複播放後一定要靠按下play才能播放第一次
-            if (_holdPlay == false) {
+            // 另外，因為從sqlite記錄播放設定，所以有可能一進入player頁面時
+            // 重複播放次數會大於0(因為之前有設定重複播放次數，記在sqlite裡)
+            // 此時會自動播放，故要設一個變數_initPlay為true的時候才可以執行_play()
+            // 所以_initPlay初始值是false，按下play鍵後變成true，就可以進入重複播放的流程
+            if (_holdPlay == false && _initPlay == true) {
               // 開始播放
               _play();
               // 進入這個條件式時已播放次數才會加1，但重複播放的第一次播放都是透過按play
               // 所以第一次加1要在play button的callback處理
               _playedTimes++;
             }
+          }
+          // 重複播放完畢時：_playedTimes == widget.state.repeatedTimes
+          else if (_playedTimes == widget.state.repeatedTimes) {
+            // 將_playedTimes歸零，則又可以呈現"準備重複播放的狀態"
+            setState(() => _playedTimes = 0);
           }
         }
       }
@@ -271,12 +286,23 @@ class _PlayerState extends State<Player> {
     // 監聽status的自訂stream
     _audioSettingStatusSubscription =
         widget.state.statusStreamController.stream.listen((status) {
+      // 在Status.initStateLoaded時有執行_initAssetAudioPlayer()
+      // 就會覆蓋掉Status.initStateLoading時所產生的player，因此可以獲得正確的duration
+      // 也就是根據sqlite裡的資料所產生的url的duration
+      // 因為Status.initStateLoading時產生的player，其url是根據state物件的預設狀態(Status.initial)
       if (status == Status.accentUpdate ||
           status == Status.genderUpdate ||
-          status == Status.rateUpdate) {
+          status == Status.rateUpdate ||
+          status == Status.initStateLoaded) {
+        setState(() {
+          // 已播放次數歸零
+          _playedTimes = 0;
+          // 要讓播放器先不播放的變數(true)
+          _holdPlay = true;
+        });
         // 更新時若是暫停狀態，要呼叫_stop，這裡先暫時不做特別檢查
         _stop();
-        // 再初始化播放器(因為更新播放設定了)，url才會重新獲得
+        // 再初始化播放器(因為更新播放設定了，state更改了)，url才會重新獲得
         _initAssetAudioPlayer();
       }
       // 特別檢查更新重複播放次數
@@ -289,28 +315,31 @@ class _PlayerState extends State<Player> {
         });
         // 更新時若是暫停狀態，要呼叫_stop，這裡先暫時不做特別檢查
         _stop();
-        // 再初始化播放器(因為更新播放設定了)，url才會重新獲得
+        // 再初始化播放器(因為更新播放設定了，state更改了)，url才會重新獲得
         _initAssetAudioPlayer();
       }
     });
+    print('init called over!');
   }
 
   // 獲得歌曲時間的方法(先播放觸發stream後立刻stop)
   Future<void> _getDuration() async {
+    print('_getDuration called!');
     // 檢查url字串不為空
     if (widget.url != null) {
       // 檢查PlayerState.stop
-      if (_playerState == PlayerState.stop) {
-        // 要使用_anotherAudioPlayer，不是_assetsAudioPlayer(因為要設定聲音為0)
-        // 開始播放歌曲，才會觸發_anotherAudioPlayer.current這個stream，才能獲得歌曲時間
-        await _anotherAudioPlayer.open(
-          Audio.network(widget.url),
-          // 設定聲音為0，確保在_stop()運作前不會讓使用者聽到聲音
-          volume: 0.0,
-        );
-        // 觸發current stream後立刻呼叫_stop()，歌曲才不會真的播放
-        _stop();
-      }
+      // if (_playerState == PlayerState.stop) {
+      // 要使用_anotherAudioPlayer，不是_assetsAudioPlayer(因為要設定聲音為0)
+      // 開始播放歌曲，才會觸發_anotherAudioPlayer.current這個stream，才能獲得歌曲時間
+      await _anotherAudioPlayer.open(
+        Audio.network(widget.url),
+        // 設定聲音為0，確保在_stop()運作前不會讓使用者聽到聲音
+        volume: 0.0,
+      );
+      print('getDuration url: ${widget.url}');
+      // 觸發current stream後立刻呼叫_stop()，歌曲才不會真的播放
+      _stop();
+      // }
     }
   }
 
@@ -334,6 +363,7 @@ class _PlayerState extends State<Player> {
           ),
           showNotification: true,
         );
+        print('_play url: ${widget.url}');
       }
       // 如果是PlayerState.pause
       if (_playerState == PlayerState.pause) {

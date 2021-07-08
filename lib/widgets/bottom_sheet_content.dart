@@ -34,7 +34,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
   StreamController<Status> _statusStreamController;
   @override
   void initState() {
-    // radio button獲得預設值
+    // (從state獲得)radio button獲得預設值
     genderSelectedValue = widget.state.gender;
     rateSelectedValue = widget.state.rate;
     accentSelectedValue = widget.state.accent;
@@ -232,6 +232,13 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                                 return null;
                               }
                             },
+                            // onSaved的傳入參數為文字框的final value
+                            // callback裡通常是將final value裝進資料容器
+                            // 呼叫_formKey.currentState.save()後便會觸發onSaved的callback
+                            // 接下來再把裝好的資料作進一步的處理(如狀態管理)
+                            // 以上兩個步驟應該包在自訂的_submit()方法裡
+                            // 然後再當一個按鈕的onPressed callback
+                            onSaved: (finalValue) {},
                             onChanged: (value) {
                               // 如果通過驗證
                               if (_formKey.currentState.validate()) {
@@ -261,18 +268,19 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                       // Navigator.of(context).pop();
                       // 限制驗證沒通過就不能關閉bottom sheet
                       if (isValidated == false) {
-                        Navigator.of(context).pop();
-                        // 也呼叫更新重複播放次數的cubit方法
+                        // 呼叫更新重複播放次數的cubit方法
                         widget.cubit.updateRepeatedTimes(
                           repeatedTimes: int.tryParse(_controller.text),
                           status: Status.repeatedTimesUpdate,
                           statusStreamController: _statusStreamController,
                         );
+                        // 關閉bottom sheet
+                        Navigator.of(context).pop();
                       }
                     },
                     edgeInset: const EdgeInsets.symmetric(
                         vertical: 10.0, horizontal: 120.0),
-                    fontSize: 20.0,
+                    fontSize: 18.0,
                   ),
                 )
               ],

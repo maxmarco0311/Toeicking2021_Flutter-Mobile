@@ -1,4 +1,4 @@
-part of 'audio_setting_cubit.dart';
+part of 'audiosetting_bloc.dart';
 
 enum Status {
   initial,
@@ -30,8 +30,6 @@ class AudioSettingState extends Equatable {
     @required this.status,
     @required this.statusStreamController,
   });
-
-  // 還是要設初始狀態，但前四個屬性的資料會在頁面cubit初始時被sqlite的資料覆蓋
   factory AudioSettingState.initial() {
     return AudioSettingState(
       accent: 'US',
@@ -42,7 +40,6 @@ class AudioSettingState extends Equatable {
       statusStreamController: StreamController<Status>(),
     );
   }
-
   @override
   List<Object> get props {
     return [

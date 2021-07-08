@@ -4,18 +4,23 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:toeicking2021/config/paths.dart';
 import 'package:toeicking2021/models/failure_model.dart';
+import 'package:toeicking2021/repositories/repositories.dart';
 
 import 'base_auth_repository.dart';
 
 class AuthRepository extends BaseAuthRepository {
   final FirebaseFirestore _firebaseFirestore;
   final auth.FirebaseAuth _firebaseAuth;
+  final LocalDataRepository _localDataRepository;
 
   AuthRepository({
     FirebaseFirestore firebaseFirestore,
     auth.FirebaseAuth firebaseAuth,
+    LocalDataRepository localDataRepository,
   })  : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance,
-        _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance;
+        _firebaseAuth = firebaseAuth ?? auth.FirebaseAuth.instance,
+        _localDataRepository =
+            localDataRepository ?? LocalDataRepository.instance;
 
   @override
   // 用user(getter)取得Firebase user狀態變化的stream
@@ -47,12 +52,22 @@ class AuthRepository extends BaseAuthRepository {
 
       // 寄出驗證信
       await user.sendEmailVerification();
+      // 將使用者資料存進firestore
       _firebaseFirestore.collection(Paths.users).doc(user.uid).set({
         'username': username,
         'email': email,
         'followers': 0,
         'following': 0,
       });
+      // 將預設的audioSetting存進sqlite
+      Map<String, dynamic> map = {
+        'accent': 'GB',
+        'gender': 'M',
+        'rate': '1.0',
+        'repeatedTimes': 0
+      };
+      _localDataRepository.insertLocalAudioSettingState(map);
+      // 回傳firebase user
       return user;
     } on auth.FirebaseAuthException catch (err) {
       throw Failure(code: err.code, message: err.message);

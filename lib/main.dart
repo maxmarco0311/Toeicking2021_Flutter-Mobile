@@ -16,6 +16,7 @@ import 'repositories/repositories.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Firebase設定
   await Firebase.initializeApp();
   // 全域設定stringify
   EquatableConfig.stringify = kDebugMode;
@@ -43,6 +44,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<APIRepository>(
           create: (_) => APIRepository(),
         ),
+        RepositoryProvider<LocalDataRepository>(
+          create: (_) => LocalDataRepository.instance,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -57,7 +61,9 @@ class MyApp extends StatelessWidget {
             ),
           ),
           BlocProvider<AudioSettingCubit>(
-            create: (context) => AudioSettingCubit(),
+            create: (context) => AudioSettingCubit(
+              localDataRepository: context.read<LocalDataRepository>(),
+            ),
           ),
         ],
         child: MaterialApp(

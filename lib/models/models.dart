@@ -6,3 +6,4 @@ export 'vocabulary_model.dart';
 export 'ga_model.dart';
 export 'va_model.dart';
 export 'sentenceBundle_model.dart';
+export 'local_audioSetting_state.dart';
