@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:toeicking2021/models/db_user_model.dart';
 import 'package:toeicking2021/models/sentenceBundle_model.dart';
 import 'package:toeicking2021/repositories/api/base_api_repository.dart';
 
@@ -11,13 +12,19 @@ class APIRepository extends BaseAPIRepository {
 
   static final APIRepository instance = APIRepository._instantiate();
 
-  // baseUrl中要去掉"https://"，否則會報錯
+  // baseUrl(要去掉"https://"，否則會報錯)
   final String _baseUrl = 'api.toeicking.com';
+  // header
+  final Map<String, String> _headers = {
+    HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
+  };
+  // 不用建構式
+  // APIRepository();
 
-  APIRepository();
-
+  // 1. 獲得所有SentenceBundles(GET)-->checked!
   @override
   Future<List<SentenceBundle>> getSentenceBundles({
+    // email參數是讓後端檢查這個api請求的user是否為valid
     @required String email,
     Map<String, String> parameters,
   }) async {
@@ -26,16 +33,109 @@ class APIRepository extends BaseAPIRepository {
       '/Sentence/GetSentences',
       parameters,
     );
-    Map<String, String> headers = {
-      HttpHeaders.contentTypeHeader: 'application/json; charset=UTF-8',
-    };
-    var response = await http.get(uri, headers: headers);
-    Map<String, dynamic> sourceMap = json.decode(response.body);
-    List<SentenceBundle> sentences = List<SentenceBundle>.from(
-      sourceMap['data']?.map(
-        (sentenceBundleMap) => SentenceBundle.fromMap(sentenceBundleMap),
+    var response = await http.get(uri, headers: _headers);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> sourceMap = json.decode(response.body);
+      List<SentenceBundle> sentences = List<SentenceBundle>.from(
+        // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
+        sourceMap['data']?.map(
+          (sentenceBundleMap) => SentenceBundle.fromMap(sentenceBundleMap),
+        ),
+      );
+      return sentences;
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 2. 新增使用者資料(POST)-->checked!
+  @override
+  Future<User> addUser({User user}) async {
+    Uri uri = Uri.https(_baseUrl, '/User/Add');
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      body: json.encode(user.toMap()),
+    );
+    if (response.statusCode == 200) {
+      return User.fromJson(response.body);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 3. 獲得使用者資料(GET)-->checked!
+  @override
+  Future<User> getUser({String email}) async {
+    // 參數範例：{'FormData.Keyword': 'absolutely'}
+    // 參數範例：{'C#物件屬性名稱': 值}
+    Uri uri = Uri.https(
+      _baseUrl,
+      '/User/GetUser',
+      // 參數直接寫在Map裡
+      {'email': email},
+    );
+    var response = await http.get(uri, headers: _headers);
+    if (response.statusCode == 200) {
+      return User.fromJson(response.body);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 4. 更新使用者資料(POST)-->checked!
+  @override
+  Future<User> updateUser({@required User user}) async {
+    Uri uri = Uri.https(_baseUrl, '/User/Update');
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      body: json.encode(user.toMap()),
+    );
+    if (response.statusCode == 200) {
+      return User.fromJson(response.body);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 5. 加入WordList(POST)-->checked!(第一次加入原本有bug，已解掉)
+  @override
+  Future<User> addWordList({String email, String vocabularyId}) async {
+    Uri uri = Uri.https(_baseUrl, '/User/AddWordList');
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      // body要傳送的資料沒有包成物件，就直接寫成Map給json.encode()處理成Json字串
+      // 注意key要寫成跟C#物件屬性名稱完全一樣(注意大小寫)
+      body: json.encode(
+        {'Email': email, 'VocabularyId': vocabularyId},
       ),
     );
-    return sentences;
+    if (response.statusCode == 200) {
+      return User.fromJson(response.body);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 6. 依字彙編號取得sentenceBundle(GET)-->checked!
+  @override
+  Future<SentenceBundle> getSentenceBundleByVocabularyId(
+      {String email, String vocabularyId}) async {
+    Uri uri = Uri.https(
+      _baseUrl,
+      '/Sentence/GetSentenceByVocabularyId',
+      {'Email': email, 'VocabularyId': vocabularyId},
+    );
+    var response = await http.get(uri, headers: _headers);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> sourceMap = json.decode(response.body);
+      // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
+      // 然後呼叫fromMap()不是fromJson()
+      return SentenceBundle.fromMap(sourceMap['data']);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
   }
 }

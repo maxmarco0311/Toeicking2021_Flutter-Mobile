@@ -25,6 +25,7 @@ class WebviewScreen extends StatefulWidget {
 }
 
 class _WebviewScreenState extends State<WebviewScreen> {
+  // position預設為1，一進入頁面預設是顯示CircularProgressIndicator()
   num position = 1;
   // final Completer<WebViewController> _controller =
   //     Completer<WebViewController>();
@@ -75,9 +76,12 @@ class _WebviewScreenState extends State<WebviewScreen> {
                 ),
               ],
             ),
+            // IndexedStack()是根據index決定顯示哪一個child widget的stack widget
             body: IndexedStack(
+              // 必備屬性，屬性值position為int，position值為哪個就顯示哪個child widget
               index: position,
               children: [
+                // index為0的child widget
                 WebView(
                   javascriptMode: JavascriptMode.unrestricted,
                   initialUrl: 'https://google.com',
@@ -85,17 +89,22 @@ class _WebviewScreenState extends State<WebviewScreen> {
                     // _controller.complete(webViewController);
                     _controller = webViewController;
                   },
+                  // 頁面開始加載
                   onPageStarted: (value) {
                     setState(() {
+                      // 顯示CircularProgressIndicator()
                       position = 1;
                     });
                   },
+                  // 頁面加載完畢
                   onPageFinished: (value) {
                     setState(() {
+                      // 顯示webview
                       position = 0;
                     });
                   },
                 ),
+                // index為1的child widget
                 Center(
                   child: CircularProgressIndicator(),
                 ),

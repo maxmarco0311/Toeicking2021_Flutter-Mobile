@@ -32,13 +32,54 @@ class User extends Equatable {
 
   // 將Json資料轉為(Dart)User物件
   factory User.fromMap(Map<String, dynamic> map) {
-    return User(
-      // 具名參數要自己加上去
-      email: map['email'],
-      valid: map['valid'],
-      rating: map['rating'],
-      wordList: List<int>.from(map['wordList']),
-    );
+    // 真正的資料是在原始map中key為data的屬性值內
+    Map<String, dynamic> dataMap = map['data'];
+    // 要檢查dataMap['wordList']是否為null，否則null會報錯(還沒加入字彙列表就會是null)
+    if (dataMap['wordList'] != null) {
+      // 如果回傳GetUserDto物件，dataMap['wordList']就是List<dynamic>型別
+      if (dataMap['wordList'] is List<dynamic>) {
+        return User(
+          // 具名參數要自己加上去
+          // 轉成Json後，這裡的key都會是小寫開頭
+          email: dataMap['email'],
+          valid: dataMap['valid'],
+          rating: dataMap['rating'],
+          // 此時dataMap['wordList']可直接當List<int>.from()的參數形成List<int>
+          wordList: List<int>.from(dataMap['wordList']),
+        );
+      }
+      // 如果回傳User物件，dataMap['wordList']就是String
+      else if (dataMap['wordList'] is String) {
+        return User(
+          email: dataMap['email'],
+          valid: dataMap['valid'],
+          rating: dataMap['rating'],
+          // dataMap['wordList']要先強迫轉型(as String)，才可呼叫split()，此時已是List<String>
+          // 再用map()將每個元素轉成int型別，記得要toList()
+          wordList: (dataMap['wordList'] as String)
+              .split(',')
+              // ***若不用箭頭函式，要記得return!!!***
+              .map((item) => int.tryParse(item))
+              .toList(),
+        );
+      }
+      // 被迫這裡也要return，不然套件會給藍字
+      else {
+        return User(
+          email: dataMap['email'],
+          valid: dataMap['valid'],
+          rating: dataMap['rating'],
+        );
+      }
+    }
+    // dataMap['wordList']是否為null(如(還沒加入字彙列表時)
+    else {
+      return User(
+        email: dataMap['email'],
+        valid: dataMap['valid'],
+        rating: dataMap['rating'],
+      );
+    }
   }
   // 將Map<String, dynamic>轉成Json(呼叫toMap())
   String toJson() => json.encode(toMap());

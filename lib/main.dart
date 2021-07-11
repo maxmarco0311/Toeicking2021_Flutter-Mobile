@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           create: (_) => UserRepository(),
         ),
         RepositoryProvider<APIRepository>(
-          create: (_) => APIRepository(),
+          create: (_) => APIRepository.instance,
         ),
         RepositoryProvider<LocalDataRepository>(
           create: (_) => LocalDataRepository.instance,
@@ -63,6 +63,7 @@ class MyApp extends StatelessWidget {
           BlocProvider<AudioSettingCubit>(
             create: (context) => AudioSettingCubit(
               localDataRepository: context.read<LocalDataRepository>(),
+              apiRepository: context.read<APIRepository>(),
             ),
           ),
         ],

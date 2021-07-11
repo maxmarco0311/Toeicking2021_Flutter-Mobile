@@ -32,6 +32,7 @@ class DetailScreen extends StatefulWidget {
       builder: (context) => BlocProvider<AudioSettingCubit>(
         create: (_) => AudioSettingCubit(
           localDataRepository: context.read<LocalDataRepository>(),
+          apiRepository: context.read<APIRepository>(),
           // AudioSettingCubit一建立時就去sqlite取目前存的那筆資料來更新state狀態(蓋掉預設狀態)
         )..getLocalAudioSettingState(),
         child: DetailScreen(sentenceBundle: args.sentenceBundle),
@@ -75,7 +76,38 @@ class _DetailScreenState extends State<DetailScreen> {
               child: ListView(
                 children: [
                   // 至少要先有一個children widget
-                  Container(),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5.0,
+                      horizontal: 15.0,
+                    ),
+                    child: CustomElevatedButton(
+                      edgeInset: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 90.0),
+                      fontSize: 18.0,
+                      text: '測試getUser',
+                      onPressed: () async {
+                        // User user = User(
+                        //     email: 'maxmarco0311@gmail.com',
+                        //     valid: false,
+                        //     rating: '6');
+                        // final User updatedUser = await context
+                        //     .read<AudioSettingCubit>()
+                        //     .updateUser(user: user);
+                        final SentenceBundle sentence = await context
+                            .read<AudioSettingCubit>()
+                            .getSentenceBundleByVocabularyId(
+                              email: 'maxmarco0311@gmail.com',
+                              vocabularyId: '5',
+                            );
+                        // final User updatedUser = await context
+                        //     .read<AudioSettingCubit>()
+                        //     .getUser(email: 'maxmarco0311@gmail.com');
+                        print(sentence.toString());
+                      },
+                    ),
+                  ),
                 ],
               ),
             ),

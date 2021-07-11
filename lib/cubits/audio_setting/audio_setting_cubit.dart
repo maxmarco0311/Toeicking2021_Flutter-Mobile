@@ -8,13 +8,16 @@ import 'package:toeicking2021/repositories/repositories.dart';
 part 'audio_setting_state.dart';
 
 class AudioSettingCubit extends Cubit<AudioSettingState> {
-  // 此cubit會用到的repository
+  // 此cubit會用到的repository：
   final LocalDataRepository _localDataRepository;
+  final APIRepository _apiRepository;
   // cubit建構式
   AudioSettingCubit({
     @required LocalDataRepository localDataRepository,
+    @required APIRepository apiRepository,
   })  : _localDataRepository =
             localDataRepository ?? LocalDataRepository.instance,
+        _apiRepository = apiRepository ?? APIRepository.instance,
         super(
           // 初始的state資料，會被getLocalAudioSettingState()所獲得的資料蓋過去
           AudioSettingState.initial(),
@@ -171,5 +174,40 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
         await _localDataRepository.getLocalAudioSettingState();
     final localAudioState = LocalAudioSettingState.fromMap(localAudioStateMap);
     return localAudioState;
+  }
+
+  // 測試API用的方法
+  Future<User> updateUser({@required User user}) async {
+    return await _apiRepository.updateUser(user: user);
+  }
+
+  // 測試API用的方法
+  Future<User> addWordList({
+    @required String email,
+    @required String vocabularyId,
+  }) async {
+    return await _apiRepository.addWordList(
+      email: email,
+      vocabularyId: vocabularyId,
+    );
+  }
+
+  // 測試API用的方法
+  Future<User> addUser({@required User user}) async {
+    return await _apiRepository.addUser(user: user);
+  }
+
+  // 測試API用的方法
+  Future<User> getUser({@required String email}) async {
+    return await _apiRepository.getUser(email: email);
+  }
+
+  // 測試API用的方法
+  Future<SentenceBundle> getSentenceBundleByVocabularyId(
+      {String email, String vocabularyId}) async {
+    return await _apiRepository.getSentenceBundleByVocabularyId(
+      email: email,
+      vocabularyId: vocabularyId,
+    );
   }
 }
