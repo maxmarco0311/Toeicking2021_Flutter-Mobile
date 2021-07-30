@@ -51,6 +51,8 @@ dependencies:
 
   expandable_bottom_sheet: ^1.1.0
 
+  material_design_icons_flutter: ^4.0.5955
+
   intl: ^0.17.0
   meta: ^1.2.4
   timeago: ^2.0.29
