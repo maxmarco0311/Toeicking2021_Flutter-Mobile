@@ -19,15 +19,18 @@ class Player extends StatefulWidget {
   final AudioSettingState state;
   // 傳入cubit
   final AudioSettingCubit cubit;
+  // 從DetailScreen傳入，收合player的函式
+  final Function contractPlayer;
 
-  const Player({
-    Key key,
-    @required this.sentenceId,
-    @required this.url,
-    @required this.onSetting,
-    @required this.state,
-    @required this.cubit,
-  }) : super(key: key);
+  const Player(
+      {Key key,
+      @required this.sentenceId,
+      @required this.url,
+      @required this.onSetting,
+      @required this.state,
+      @required this.cubit,
+      @required this.contractPlayer})
+      : super(key: key);
 
   @override
   _PlayerState createState() => _PlayerState();
@@ -183,6 +186,8 @@ class _PlayerState extends State<Player> {
                     ),
                     onPressed: () {
                       _play();
+                      // 收合player
+                      widget.contractPlayer();
                       // 若有設定重複播放：widget.state.repeatedTimes > 0
                       // 且重複播放還沒播完時：widget.state.repeatedTimes != _playedTimes
                       if (widget.state.repeatedTimes > 0 &&

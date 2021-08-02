@@ -22,7 +22,8 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
           // 初始的state資料，會被getLocalAudioSettingState()所獲得的資料蓋過去
           AudioSettingState.initial(),
         );
-  // cubit一在頁面建立時就要呼叫的方法，取出sqlite現存的資料來更新狀態
+
+  // 1. cubit一在頁面建立時就要呼叫的方法，取出sqlite現存的資料來更新狀態
   void getLocalAudioSettingState() async {
     print('getLocalAudioSettingState called!');
     // 因為此方法是非同步操作，所以一進入此方法時，先將status改為initStateLoading
@@ -49,11 +50,13 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     }
   }
 
+  // 2. 更新腔調
   void updateAccent({
     @required String accent,
     @required Status status,
     @required StreamController<Status> statusStreamController,
   }) async {
+    // 在stream裡加入status資料
     statusStreamController.sink.add(status);
     // 更新state
     emit(
@@ -79,6 +82,7 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     }
   }
 
+  // 3. 更新聲道
   void updateGender({
     @required String gender,
     @required Status status,
@@ -108,6 +112,7 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     }
   }
 
+  // 4. 更新語速
   void updateRate({
     @required String rate,
     @required Status status,
@@ -137,13 +142,14 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     }
   }
 
+  // 5. 更新重複播放次數
   void updateRepeatedTimes({
     @required int repeatedTimes,
     @required Status status,
     @required StreamController<Status> statusStreamController,
   }) async {
     statusStreamController.sink.add(status);
-    // 一更新重複撥放次數，已播放次數就要歸零
+    // 一更新重複播放次數，已播放次數就要歸零
     emit(
       state.copyWith(
         repeatedTimes: repeatedTimes,
@@ -168,7 +174,8 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     }
   }
 
-  // 獲得sqlite裡目前的LocalAudioSettingState物件(目前存的那一筆資料)
+  // 6. 獲得sqlite裡目前的LocalAudioSettingState物件(目前存的那一筆資料)
+  // 都是取資料表中的第一筆
   Future<LocalAudioSettingState> getCurrentLocalAudioState() async {
     final localAudioStateMap =
         await _localDataRepository.getLocalAudioSettingState();
@@ -176,6 +183,7 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     return localAudioState;
   }
 
+  // ***以下為API方法，要另外設bloc或cubit放***
   // 測試API用的方法
   Future<User> updateUser({@required User user}) async {
     return await _apiRepository.updateUser(user: user);

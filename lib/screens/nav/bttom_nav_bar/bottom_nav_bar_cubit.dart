@@ -16,6 +16,7 @@ class BottomNavBarCubit extends Cubit<BottomNavBarState> {
   void updateSelectedItem(BottomNavItem item) {
     if (item != state.selectedItem) {
       emit(BottomNavBarState(selectedItem: item));
+      print('selected item: ${state.selectedItem}');
     }
   }
 }

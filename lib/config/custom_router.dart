@@ -29,8 +29,25 @@ class CustomRouter {
         return NavScreen.route();
       case WebviewScreen.routeName:
         return WebviewScreen.route();
+      // case DetailScreen.routeName:
+      //   return DetailScreen.route(args: settings.arguments);
+      default:
+        return _errorRoute();
+    }
+  }
+
+  // 在TabNavigator()內運作的路由：
+  // 進入bottom_nav的任何一頁"後"再導向到的頁面(ProfileScreen, EditProfileScreen, CommentsScreen)
+  // 這些頁面都需要在這裡定義路由，因為進入nav_item頁面後，路由就是onGenerateNestedRoute控制
+  // 因此這些頁面本身要設route()回傳Route物件，也就是MaterialPageRoute()來生畫面
+  // route()可利用settings.arguments傳參數
+  // 因為已經有一個更上層的路由onGenerateRoute，所以此路由稱為onGenerateNestedRoute
+  static Route onGenerateNestedRoute(RouteSettings settings) {
+    print('Nested Route: ${settings.name}');
+    switch (settings.name) {
       case DetailScreen.routeName:
         return DetailScreen.route(args: settings.arguments);
+
       default:
         return _errorRoute();
     }

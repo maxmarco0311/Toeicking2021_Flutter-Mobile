@@ -7,7 +7,7 @@ class LocalAudioSettingState extends Equatable {
   final String gender;
   final String rate;
   final int repeatedTimes;
-
+  // 物件建構式
   LocalAudioSettingState({
     @required this.id,
     @required this.accent,
@@ -26,6 +26,7 @@ class LocalAudioSettingState extends Equatable {
     ];
   }
 
+  // 類別方法：更新物件屬性值用
   LocalAudioSettingState copyWith({
     int id,
     String accent,
@@ -42,6 +43,7 @@ class LocalAudioSettingState extends Equatable {
     );
   }
 
+  // 類別方法：將物件轉成Map存db
   Map<String, dynamic> toMap() {
     final map = Map<String, dynamic>();
     // 初次新增，會沒有id，所以要檢查
@@ -55,6 +57,7 @@ class LocalAudioSettingState extends Equatable {
     return map;
   }
 
+  // 工廠建構式：將db撈出的Map轉成物件
   factory LocalAudioSettingState.fromMap(Map<String, dynamic> map) {
     return LocalAudioSettingState(
       id: map['id'],

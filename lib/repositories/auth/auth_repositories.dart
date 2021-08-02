@@ -59,14 +59,22 @@ class AuthRepository extends BaseAuthRepository {
         'followers': 0,
         'following': 0,
       });
-      // 將預設的audioSetting存進sqlite
-      Map<String, dynamic> map = {
-        'accent': 'GB',
-        'gender': 'M',
-        'rate': '1.0',
-        'repeatedTimes': 0
-      };
-      _localDataRepository.insertLocalAudioSettingState(map);
+      // 先檢查sqlite資料表裡是否已有資料，以防萬一有人用不同帳號在同一個手機登入
+      final row = await _localDataRepository.getLocalAudioSettingState();
+      print('row not empty: ${row.isNotEmpty}');
+      // 資料表裡沒資料再將播放初始值存入
+      if (!row.isNotEmpty) {
+        // 將預設的audioSetting存進sqlite
+        Map<String, dynamic> map = {
+          'accent': 'GB',
+          'gender': 'M',
+          'rate': '1.0',
+          'repeatedTimes': 0
+        };
+        _localDataRepository.insertLocalAudioSettingState(map);
+        print('insert default value!!!');
+      }
+
       // 回傳firebase user
       return user;
     } on auth.FirebaseAuthException catch (err) {

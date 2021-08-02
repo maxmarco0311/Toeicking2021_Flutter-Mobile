@@ -16,6 +16,7 @@ class LocalDataRepository extends BaseLocalDataRepository {
   String columnRate = 'rate';
   String columnRepeatedTimes = 'repeatedTimes';
 
+  // 取得sqlite db實體
   Future<Database> get db async {
     if (_db == null) {
       _db = await _initDb();
@@ -23,6 +24,7 @@ class LocalDataRepository extends BaseLocalDataRepository {
     return _db;
   }
 
+  // 初始化db實體
   Future<Database> _initDb() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = dir.path + '/local_audioSetting.db';
@@ -31,11 +33,13 @@ class LocalDataRepository extends BaseLocalDataRepository {
     return localAudioSettingDb;
   }
 
+  // 建立資料表，也要設一個對應資料表的類別LocalAudioSettingState，才可把資料存取給程式使用
   void _createDb(Database db, int version) async {
     await db.execute(
         'CREATE TABLE $audioSettingTable($columnId INTEGER PRIMARY KEY AUTOINCREMENT, $columnAccent TEXT, $columnGender TEXT, $columnRate TEXT, $columnRepeatedTimes INTEGER)');
   }
 
+  // 從db取得播放設定值
   @override
   Future<Map<String, dynamic>> getLocalAudioSettingState() async {
     Database db = await this.db;
@@ -43,12 +47,15 @@ class LocalDataRepository extends BaseLocalDataRepository {
     // print(result.toString());
     // 檢查是否為空集合
     if (result.isNotEmpty) {
+      // 取資料表的第一筆
       return result.first;
     } else {
       return {};
     }
   }
 
+  // 將播放設定初始值寫入db
+  // 在auth_repository裡的signUpWithEmailAndPassword()裡呼叫
   @override
   Future<int> insertLocalAudioSettingState(Map<String, dynamic> map) async {
     Database db = await this.db;
@@ -56,6 +63,8 @@ class LocalDataRepository extends BaseLocalDataRepository {
     return result;
   }
 
+  // 更新db中的播放設定值
+  // 在audio setting cubit所有更新方法內呼叫
   @override
   Future<int> updateLocalAudioSettingState(Map<String, dynamic> map) async {
     Database db = await this.db;

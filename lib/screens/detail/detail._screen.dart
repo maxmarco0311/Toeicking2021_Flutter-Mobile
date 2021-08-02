@@ -1,6 +1,7 @@
 // import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:toeicking2021/custom_packages/packages.dart';
 import 'package:toeicking2021/cubits/cubits.dart';
 import 'package:toeicking2021/models/models.dart';
@@ -23,7 +24,9 @@ class DetailScreen extends StatefulWidget {
   }) : super(key: key);
   // 路由字串
   static const String routeName = '/detail';
+
   // 回傳路由(要傳入路由參數所屬"類別"物件args)
+  // 給onGenerateNestedRoute用，因為此頁面都是從nav_item頁面(mode, wordList)"內"導向過來
   static Route route({@required DetailScreenArgs args}) {
     // 可以側滑顯示，所以用MaterialPageRoute()
     return MaterialPageRoute(
@@ -53,7 +56,7 @@ class _DetailScreenState extends State<DetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('播放器測試'),
+        title: Text('多益必考金句'),
         centerTitle: true,
       ),
       // ExpandableBottomSheet()物件要放在body屬性值
@@ -153,8 +156,9 @@ class _DetailScreenState extends State<DetailScreen> {
                                 primary: Theme.of(context).primaryColor),
                             // 點按後會展開到最大(會觸發onIsExtendedCallback)
                             onPressed: () => _key.currentState.expand(),
-                            icon: Icon(Icons.keyboard_voice_sharp),
-                            label: Text('音檔播放'),
+                            // Icon(Icons.keyboard_voice_sharp)
+                            icon: Icon(MdiIcons.waveform),
+                            label: Text('音檔播放介面'),
                           )),
               ),
               SizedBox(
@@ -190,6 +194,9 @@ class _DetailScreenState extends State<DetailScreen> {
                 // 傳入state與cubit
                 state: state,
                 cubit: cubit,
+                // 傳入player widget用來收合player的函式，用callback方式傳入
+                // player屬性型別用Function即可
+                contractPlayer: () => _key.currentState.contract(),
               );
             } else if (state.status == Status.failure) {
               return Center(

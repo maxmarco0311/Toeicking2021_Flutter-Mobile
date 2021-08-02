@@ -20,8 +20,9 @@ class BottomNavBar extends StatelessWidget {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       backgroundColor: Colors.white,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+      // 下列兩個屬性為true，文字才會出現
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
       selectedItemColor: Theme.of(context).primaryColor,
       unselectedItemColor: Colors.grey,
       // .values可將enum轉成List<enum型別>，元素值為BottomNavItem.feed

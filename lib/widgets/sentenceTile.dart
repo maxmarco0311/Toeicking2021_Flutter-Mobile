@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:toeicking2021/models/models.dart';
-import 'package:toeicking2021/screens/detail/detail.dart';
+import 'package:toeicking2021/screens/detail/detail._screen.dart';
 
 class SentenceTile extends StatelessWidget {
   final SentenceBundle sentenceBundle;
@@ -34,6 +34,7 @@ class SentenceTile extends StatelessWidget {
           trailing: IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed(
+                // 進入Detaile頁面
                 DetailScreen.routeName,
                 arguments: DetailScreenArgs(sentenceBundle: sentenceBundle),
               );
