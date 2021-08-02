@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:toeicking2021/enums/bottom_nav_item.dart';
-import 'package:toeicking2021/screens/nav/bttom_nav_bar/bottom_nav_bar_cubit.dart';
+import 'package:toeicking2021/screens/nav/cubit/bottom_nav_bar_cubit.dart';
 import 'package:toeicking2021/screens/nav/widgets/widgets.dart';
 
 class NavScreen extends StatelessWidget {
