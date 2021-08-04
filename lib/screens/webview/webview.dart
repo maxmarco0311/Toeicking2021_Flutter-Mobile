@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toeicking2021/blocs/blocs.dart';
@@ -90,6 +91,26 @@ class _WebviewScreenState extends State<WebviewScreen> {
                     // 顯示webview
                     position = 0;
                   });
+                  // 顯示FlushBar
+                  Flushbar(
+                    flushbarPosition: FlushbarPosition.TOP,
+                    duration: Duration(seconds: 7),
+                    icon: Icon(
+                      Icons.notifications,
+                      size: 32.0,
+                      color: Colors.white,
+                    ),
+                    title: '信箱驗證',
+                    message: '請至maxmarco0311@gmail.com收驗證信，完成註冊程序',
+                    // mainButton: FlatButton(
+                    //   child: Text(
+                    //     '關閉',
+                    //     style: TextStyle(color: Colors.white, fontSize: 16),
+                    //   ),
+                    //   onPressed: () => Flushbar().dismiss(),
+                    // ),
+                    // 還有margin屬性可決定flushbar的位置
+                  )..show(context);
                 },
               ),
               // index為1的child widget

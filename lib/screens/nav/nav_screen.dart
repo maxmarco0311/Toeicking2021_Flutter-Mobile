@@ -98,10 +98,10 @@ class NavScreen extends StatelessWidget {
     BottomNavItem selectedItem,
     bool isSameItem,
   ) {
-    // 如果在某一個bottom item頁面中導向到其它頁後(不是透過按其它bottom item)
-    // 又再按了一次目前所在的bottom item
+    // 如果在某一個nav item頁面中導向到其它頁後(不是透過按其它bottom item)
+    // 又再按了一次目前所在的nav item
     if (isSameItem) {
-      // 就要回到這個bottom item最初會顯示的頁面
+      // 就要回到這個nav item最初會顯示的頁面
       navigatorKeys[selectedItem]
           // 類似Navigator.of<context>，但有global key的狀態，也就是有screen stack history
           .currentState

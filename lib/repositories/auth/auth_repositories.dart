@@ -78,8 +78,10 @@ class AuthRepository extends BaseAuthRepository {
       // 回傳firebase user
       return user;
     } on auth.FirebaseAuthException catch (err) {
+      print('error code: ${err.code}\n error message: ${err.message}');
       throw Failure(code: err.code, message: err.message);
     } on PlatformException catch (err) {
+      print('error code: ${err.code}\n error message: ${err.message}');
       throw Failure(code: err.code, message: err.message);
     }
   }
@@ -97,9 +99,11 @@ class AuthRepository extends BaseAuthRepository {
       );
       return credential.user;
     } on auth.FirebaseAuthException catch (err) {
+      print('error code: ${err.code}\n error message: ${err.message}');
       // 要在這裡處理各種例外錯誤(無效email、email沒有註冊、密碼錯誤等)
       throw Failure(code: err.code, message: err.message);
     } on PlatformException catch (err) {
+      print('error code: ${err.code}\n error message: ${err.message}');
       throw Failure(code: err.code, message: err.message);
     }
   }

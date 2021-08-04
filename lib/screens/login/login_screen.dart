@@ -111,6 +111,19 @@ class LoginScreen extends StatelessWidget {
                                   .pushNamed(SignupScreen.routeName),
                               child: const Text('註冊'),
                             ),
+                            // 忘記密碼
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text('忘記密碼'),
+                                  style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      primary: Theme.of(context).primaryColor),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
