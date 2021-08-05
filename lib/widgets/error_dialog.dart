@@ -8,17 +8,17 @@ class ErrorDialog extends StatelessWidget {
   // 標題
   final String title;
   // 錯誤code
-  final String code;
+  // final String code;
   // 內容
   final String content;
 
   const ErrorDialog({
     Key key,
     // title用預設值，因為每次都一樣
-    this.title = 'Error',
+    this.title = '錯誤訊息',
     // content每次都一樣，必備屬性
     @required this.content,
-    @required this.code,
+    // @required this.code,
   }) : super(key: key);
 
   @override
@@ -36,13 +36,13 @@ class ErrorDialog extends StatelessWidget {
       // 標題
       title: Text(title),
       // 內容
-      content: Text('$code: $content'),
+      content: Text(content),
       // 按鈕(Action)
       actions: [
         CupertinoDialogAction(
           // 點按後將Dialogue關掉要用pop()
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Ok'),
+          child: const Text('關閉'),
         ),
       ],
     );
@@ -59,7 +59,7 @@ class ErrorDialog extends StatelessWidget {
       actions: [
         FlatButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Ok'),
+          child: const Text('關閉'),
         ),
       ],
     );

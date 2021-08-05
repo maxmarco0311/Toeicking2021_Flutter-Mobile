@@ -28,8 +28,11 @@ class WebviewScreen extends StatefulWidget {
 class _WebviewScreenState extends State<WebviewScreen> {
   // position預設為1，一進入頁面預設是顯示CircularProgressIndicator()
   num position = 1;
+  // 移動上下頁所需要的controller
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  // 控制flush bar只在進入webview第一頁顯示
+  bool showFlushBar = true;
   @override
   void initState() {
     super.initState();
@@ -44,18 +47,34 @@ class _WebviewScreenState extends State<WebviewScreen> {
         return Scaffold(
           appBar: AppBar(
             leading: // x按鈕
-                IconButton(
+                TextButton(
+              // 打開bottom sheet
               onPressed: () {
                 // reload()會觸發userChanges()，若有驗證，emailVerified會是true
                 context.read<AuthRepository>().getCurrentUser.reload();
                 // 導回splash_screen，有驗證的會導向nav_screen，沒驗證還是回到verification_screen
                 Navigator.of(context).pushNamed(SplashScreen.routeName);
               },
-              icon: Icon(
-                Icons.close,
-                size: 30.0,
+              child: Text(
+                '完成',
+                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
               ),
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  primary: Colors.white),
             ),
+            //     IconButton(
+            //   onPressed: () {
+            //     // reload()會觸發userChanges()，若有驗證，emailVerified會是true
+            //     context.read<AuthRepository>().getCurrentUser.reload();
+            //     // 導回splash_screen，有驗證的會導向nav_screen，沒驗證還是回到verification_screen
+            //     Navigator.of(context).pushNamed(SplashScreen.routeName);
+            //   },
+            //   icon: Icon(
+            //     Icons.close,
+            //     size: 30.0,
+            //   ),
+            // ),
             title: Text('信箱驗證'),
             centerTitle: true,
             // 隱藏回上一頁
@@ -92,25 +111,29 @@ class _WebviewScreenState extends State<WebviewScreen> {
                     position = 0;
                   });
                   // 顯示FlushBar
-                  Flushbar(
-                    flushbarPosition: FlushbarPosition.TOP,
-                    duration: Duration(seconds: 7),
-                    icon: Icon(
-                      Icons.notifications,
-                      size: 32.0,
-                      color: Colors.white,
-                    ),
-                    title: '信箱驗證',
-                    message: '請至maxmarco0311@gmail.com收驗證信，完成註冊程序',
-                    // mainButton: FlatButton(
-                    //   child: Text(
-                    //     '關閉',
-                    //     style: TextStyle(color: Colors.white, fontSize: 16),
-                    //   ),
-                    //   onPressed: () => Flushbar().dismiss(),
-                    // ),
-                    // 還有margin屬性可決定flushbar的位置
-                  )..show(context);
+                  if (showFlushBar) {
+                    Flushbar(
+                      flushbarPosition: FlushbarPosition.TOP,
+                      duration: Duration(seconds: 7),
+                      icon: Icon(
+                        Icons.notifications,
+                        size: 32.0,
+                        color: Colors.white,
+                      ),
+                      title: '信箱驗證',
+                      message: '請至maxmarco0311@gmail.com收驗證信，完成註冊程序',
+                      // mainButton: FlatButton(
+                      //   child: Text(
+                      //     '關閉',
+                      //     style: TextStyle(color: Colors.white, fontSize: 16),
+                      //   ),
+                      //   onPressed: () => Flushbar().dismiss(),
+                      // ),
+                      // 還有margin屬性可決定flushbar的位置
+                    )..show(context);
+                    // 顯示一次後就不顯示
+                    showFlushBar = false;
+                  }
                 },
               ),
               // index為1的child widget

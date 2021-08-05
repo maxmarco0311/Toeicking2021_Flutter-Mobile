@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:meta/meta.dart';
 import 'package:toeicking2021/config/paths.dart';
 import 'package:toeicking2021/models/failure_model.dart';
 import 'package:toeicking2021/repositories/repositories.dart';
+import 'package:toeicking2021/utilities/translate_exception_error.dart';
 
 import 'base_auth_repository.dart';
 
@@ -79,10 +82,19 @@ class AuthRepository extends BaseAuthRepository {
       return user;
     } on auth.FirebaseAuthException catch (err) {
       print('error code: ${err.code}\n error message: ${err.message}');
-      throw Failure(code: err.code, message: err.message);
+      // 要在這裡處理各種例外錯誤(無效email、email沒有註冊、密碼錯誤等)
+      // 先寫個類別將err.code轉成對應的中文錯誤訊息字串，再將該字串傳入Failure物件(傳一個字串就好)
+      // Failure物件(類別本身和註冊登入的cubit)以及ErrorDialog物件(類別本身)要修改
+      // 參考https://gist.github.com/nikhilmufc7/6b74a3c12a6e2d3284942d40ff583e37
+      String errorMessage = TranslateExceptionError.authException(err.code);
+      throw Failure(message: errorMessage);
     } on PlatformException catch (err) {
       print('error code: ${err.code}\n error message: ${err.message}');
-      throw Failure(code: err.code, message: err.message);
+      // 參考https://github.com/flutter/flutter/issues/20223#issue-347613208
+      String errorMessage = Platform.isIOS
+          ? TranslateExceptionError.platformException(err.code)
+          : TranslateExceptionError.platformException(err.message);
+      throw Failure(message: errorMessage);
     }
   }
 
@@ -101,10 +113,14 @@ class AuthRepository extends BaseAuthRepository {
     } on auth.FirebaseAuthException catch (err) {
       print('error code: ${err.code}\n error message: ${err.message}');
       // 要在這裡處理各種例外錯誤(無效email、email沒有註冊、密碼錯誤等)
-      throw Failure(code: err.code, message: err.message);
+      String errorMessage = TranslateExceptionError.authException(err.code);
+      throw Failure(message: errorMessage);
     } on PlatformException catch (err) {
       print('error code: ${err.code}\n error message: ${err.message}');
-      throw Failure(code: err.code, message: err.message);
+      String errorMessage = Platform.isIOS
+          ? TranslateExceptionError.platformException(err.code)
+          : TranslateExceptionError.platformException(err.message);
+      throw Failure(message: errorMessage);
     }
   }
 

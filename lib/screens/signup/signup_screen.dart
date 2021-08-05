@@ -35,7 +35,6 @@ class SignupScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) => ErrorDialog(
-                  code: state.failure.code,
                   content: state.failure.message,
                 ),
               );
