@@ -28,7 +28,9 @@ class CustomRouter {
       case NavScreen.routeName:
         return NavScreen.route();
       case WebviewScreen.routeName:
-        return WebviewScreen.route();
+        return WebviewScreen.route(args: settings.arguments);
+      case ForgotPasswordScreen.routeName:
+        return ForgotPasswordScreen.route();
       default:
         return _errorRoute();
     }
@@ -56,10 +58,10 @@ class CustomRouter {
       settings: const RouteSettings(name: '/error'),
       builder: (_) => Scaffold(
         appBar: AppBar(
-          title: const Text('Error'),
+          title: const Text('錯誤'),
         ),
         body: const Center(
-          child: Text('Something went wrong!'),
+          child: Text('出現無法預期的錯誤！'),
         ),
       ),
     );

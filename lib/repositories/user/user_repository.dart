@@ -12,6 +12,21 @@ class UserRepository extends BaseUserRepository {
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
 
   @override
+  // 查詢email是否存在(forgot password用的)
+  Future<bool> isEmailExist({String email}) async {
+    print(email);
+    final userSnap = await _firebaseFirestore
+        .collection(Paths.users)
+        // 條件查詢
+        .where('email', isEqualTo: email)
+        // get()獲得Future<QuerySnapshot>，snapshots()獲得Stream<QuerySnapshot>
+        // 使用await呼叫，所以實際回傳的是QuerySnapshot
+        .get();
+    // 如果有查到一筆，就代表email存在(有註冊過)
+    return userSnap.docs.length == 1 ? true : false;
+  }
+
+  @override
   // 根據userId找出Firestore中的user物件資料，回傳承自訂user物件
   Future<AuthUser> getUserWithId({@required String userId}) async {
     // doc(userId)回傳DocumentReference物件，get()回傳Future<DocumentSnapshot>

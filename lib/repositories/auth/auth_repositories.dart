@@ -129,4 +129,10 @@ class AuthRepository extends BaseAuthRepository {
   Future<void> logOut() async {
     await _firebaseAuth.signOut();
   }
+
+  // 重設密碼的方法(這是登出時讀取firestore，所以要修改firestore rules)
+  @override
+  Future<void> resetPassword({String email}) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+  }
 }

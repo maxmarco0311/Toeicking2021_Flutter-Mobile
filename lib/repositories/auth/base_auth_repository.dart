@@ -12,4 +12,5 @@ abstract class BaseAuthRepository {
     String password,
   });
   Future<void> logOut();
+  Future<void> resetPassword({String email});
 }

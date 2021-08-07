@@ -88,7 +88,15 @@ class VerificationScreen extends StatelessWidget {
                     text: '前往收信',
                     onPressed: () {
                       // 打開webview
-                      Navigator.of(context).pushNamed(WebviewScreen.routeName);
+                      Navigator.of(context).pushNamed(
+                        WebviewScreen.routeName,
+                        arguments: WebviewScreenArgs(
+                          title: '信箱驗證',
+                          flushBarMessage:
+                              '請至maxmarco0311@gmail.com收驗證信，完成註冊程序',
+                          sourcePage: 'verification',
+                        ),
+                      );
                     },
                     edgeInset: const EdgeInsets.all(8.0),
                     fontSize: 17.0,

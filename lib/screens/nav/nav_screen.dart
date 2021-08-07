@@ -33,7 +33,7 @@ class NavScreen extends StatelessWidget {
   };
   // map for bottom item
   final Map<BottomNavItem, IconData> items = const {
-    BottomNavItem.mode: MdiIcons.bookAlphabet,
+    BottomNavItem.mode: MdiIcons.home,
     BottomNavItem.students: MdiIcons.pencilCircle,
     BottomNavItem.wordList: Icons.list,
     BottomNavItem.others: Icons.settings,

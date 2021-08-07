@@ -9,3 +9,4 @@ export 'detail/detail._screen.dart';
 export 'students/students_screen.dart';
 export 'word_list/word_list_screen.dart';
 export 'others/other_screen.dart';
+export 'forgot_password/forgot_password_screen.dart';

@@ -186,9 +186,9 @@ class _PlayerState extends State<Player> {
                     ),
                     onPressed: () {
                       _play();
-                      // ***延遲一秒，收合player***
+                      // ***延遲一秒，收合player***(考慮是否要使用！)
                       Future.delayed(
-                        Duration(seconds: 1),
+                        Duration(seconds: 2),
                         () => widget.contractPlayer(),
                       );
                       // 若有設定重複播放：widget.state.repeatedTimes > 0

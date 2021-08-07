@@ -115,7 +115,9 @@ class LoginScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 TextButton(
-                                  onPressed: () {},
+                                  onPressed: () => Navigator.of(context)
+                                      .pushNamed(
+                                          ForgotPasswordScreen.routeName),
                                   child: Text('忘記密碼'),
                                   style: TextButton.styleFrom(
                                       padding: EdgeInsets.zero,
