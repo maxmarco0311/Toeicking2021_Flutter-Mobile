@@ -6,6 +6,7 @@ import 'package:toeicking2021/custom_packages/packages.dart';
 import 'package:toeicking2021/cubits/cubits.dart';
 import 'package:toeicking2021/models/models.dart';
 import 'package:toeicking2021/repositories/repositories.dart';
+import 'package:toeicking2021/screens/detail/widgets/widgets.dart';
 import 'package:toeicking2021/widgets/widgets.dart';
 
 // 路由參數：SentenceBundle物件
@@ -55,8 +56,12 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xFFF6F7F9),
       appBar: AppBar(
-        title: Text('多益必考金句'),
+        title: Text(
+          '多益必考金句${widget.sentenceBundle.sentence.sentenceId.toString()}',
+          style: TextStyle(letterSpacing: 1.5),
+        ),
         centerTitle: true,
       ),
       // ExpandableBottomSheet()物件要放在body屬性值
@@ -72,49 +77,146 @@ class _DetailScreenState extends State<DetailScreen> {
         // 點按header會toggle
         enableToggle: true,
         // background屬性值(必備)是此頁"非上下拉部份"的widget
-        background: Column(
-          children: [
-            // ListView()為Column()的child一定要外包Expanded()
-            Expanded(
-              child: ListView(
-                children: [
-                  // 至少要先有一個children widget
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10.0),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 5.0,
-                      horizontal: 15.0,
+        // 使用TabBar最外層要包DefaultTabController
+        background: DefaultTabController(
+          length: 3,
+          // TabBarView一般一定要給固定高度，若要用SingleChildScrollView
+          // 必須使用NestedScrollView，把TabBarView放在其body屬性值裡
+          child: NestedScrollView(
+            scrollDirection: Axis.vertical,
+            // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
+            // 回傳List<Widget>
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) => [
+              // 必須用SliverToBoxAdapter，才可有無限scroll的效果
+              // Column()外也必須包SliverToBoxAdapter
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    //1. 句子與翻譯
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 25.0, vertical: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.sentenceBundle.sentence.sen,
+                            // Theme.of(context).textTheme.headline6
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                          SizedBox(height: 10.0),
+                          Text(
+                            widget.sentenceBundle.sentence.chinesese,
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              color: Colors.black,
+                              letterSpacing: 1.0,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
-                    child: CustomElevatedButton(
-                      edgeInset: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 90.0),
-                      fontSize: 18.0,
-                      text: '測試getUser',
-                      onPressed: () async {
-                        // User user = User(
-                        //     email: 'maxmarco0311@gmail.com',
-                        //     valid: false,
-                        //     rating: '6');
-                        // final User updatedUser = await context
-                        //     .read<AudioSettingCubit>()
-                        //     .updateUser(user: user);
-                        final SentenceBundle sentence = await context
-                            .read<AudioSettingCubit>()
-                            .getSentenceBundleByVocabularyId(
-                              email: 'maxmarco0311@gmail.com',
-                              vocabularyId: '5',
-                            );
-                        // final User updatedUser = await context
-                        //     .read<AudioSettingCubit>()
-                        //     .getUser(email: 'maxmarco0311@gmail.com');
-                        print(sentence.toString());
-                      },
+                    // 2. TabBar
+                    Container(
+                      decoration: BoxDecoration(
+                        // 有設BoxDecoration的話，color就要放在裡面，否則會報錯
+                        color: Colors.white,
+                        // 左右圓角
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        // container陰影
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            offset: Offset(0, -1),
+                            blurRadius: 6.0,
+                          ),
+                        ],
+                      ),
+                      child: TabBar(
+                        indicatorWeight: 3.0,
+                        // 被選中的tab文字顏色
+                        labelColor: Theme.of(context).primaryColor,
+                        //沒被選中的tab文字顏色
+                        unselectedLabelColor: Colors.black87,
+                        //被選中的tab文字樣式，通常會是粗體
+                        labelStyle: TextStyle(
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 1.0,
+                        ),
+                        //沒被選中的tab文字樣式，通常沒有粗體
+                        unselectedLabelStyle: TextStyle(
+                          fontSize: 16.0,
+                          letterSpacing: 1.0,
+                        ),
+                        tabs: [
+                          Tab(text: "必考字彙"),
+                          Tab(text: "字彙解析"),
+                          Tab(text: "文法解析"),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+            // NestedScrollView的必備屬性(要scroll的widget放在這)
+            body: TabBarView(
+              children: [
+                // 必考字彙
+                // ListView的padding，每個tab都要一樣
+                // 也跟上面句子容器的左右padding(25.0)一樣，看起來會比較整齊
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 15.0, horizontal: 25.0),
+                  child: ListView.builder(
+                    itemCount: widget.sentenceBundle.vocabularies.length,
+                    itemBuilder: (context, index) {
+                      Vocabulary vocabulary =
+                          widget.sentenceBundle.vocabularies[index];
+                      return VocTile(
+                        sentenceId: vocabulary.sentenceId,
+                        vocabularyId: vocabulary.vocabularyId,
+                        voc: vocabulary.voc,
+                        category: vocabulary.category,
+                        chinese: vocabulary.chinese,
+                      );
+                    },
+                  ),
+                ),
+                SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text("字彙解析"),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+                SingleChildScrollView(
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Center(
+                          child: Text("文法解析"),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)
         persistentHeader: Container(
@@ -153,7 +255,8 @@ class _DetailScreenState extends State<DetailScreen> {
                         : TextButton.icon(
                             // 顏色在這換
                             style: TextButton.styleFrom(
-                                primary: Theme.of(context).primaryColor),
+                              primary: Colors.black,
+                            ),
                             // 點按後會展開到最大(會觸發onIsExtendedCallback)
                             onPressed: () => _key.currentState.expand(),
                             // Icon(Icons.keyboard_voice_sharp)

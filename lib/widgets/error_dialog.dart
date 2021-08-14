@@ -34,7 +34,11 @@ class ErrorDialog extends StatelessWidget {
   CupertinoAlertDialog _showIOSDialog(BuildContext context) {
     return CupertinoAlertDialog(
       // 標題
-      title: Text(title),
+      title: Icon(
+        Icons.error,
+        color: Theme.of(context).primaryColor,
+        size: 60.0,
+      ),
       // 內容
       content: Text(content),
       // 按鈕(Action)
@@ -52,16 +56,70 @@ class ErrorDialog extends StatelessWidget {
   AlertDialog _showAndroidDialog(BuildContext context) {
     return AlertDialog(
       // 標題
-      title: Text(title),
+      title: Icon(
+        Icons.error,
+        color: Theme.of(context).primaryColor,
+        size: 60.0,
+      ),
       // 內容
-      content: Text(content),
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            content,
+            style: TextStyle(fontSize: 18.0, letterSpacing: 1.0),
+          ),
+        ],
+      ),
       // 按鈕(Action)
       actions: [
-        FlatButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('關閉'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AlertButton(
+              backgroundColor: Theme.of(context).primaryColor,
+              edgeInset: EdgeInsets.symmetric(horizontal: 8.0),
+              text: '關閉',
+              fontSize: 16.0,
+              onPressed: () => Navigator.of(context).pop(),
+            )
+          ],
         ),
       ],
+    );
+  }
+}
+
+class AlertButton extends StatelessWidget {
+  final Color backgroundColor;
+  final EdgeInsetsGeometry edgeInset;
+  final String text;
+  final double fontSize;
+  final Function onPressed;
+  const AlertButton({
+    Key key,
+    @required this.backgroundColor,
+    @required this.edgeInset,
+    @required this.text,
+    @required this.fontSize,
+    @required this.onPressed,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        primary: backgroundColor,
+        onPrimary: Colors.white,
+      ),
+      child: Padding(
+        padding: edgeInset,
+        child: Text(
+          text,
+          style: TextStyle(fontSize: fontSize, letterSpacing: 1.0),
+        ),
+      ),
     );
   }
 }

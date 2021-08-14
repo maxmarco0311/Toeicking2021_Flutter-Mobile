@@ -26,7 +26,7 @@ class TranslateExceptionError {
       case 'ERROR_WEAK_PASSWORD':
         chineseErrorMessage = '密碼強度太弱';
         break;
-      case 'ERROR_EMAIL_ALREADY_IN_USE':
+      case 'email-already-in-use':
         chineseErrorMessage = '此電子郵件已註冊';
         break;
       case 'ERROR_INVALID_CREDENTIAL':
