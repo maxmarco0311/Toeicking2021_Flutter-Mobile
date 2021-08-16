@@ -23,6 +23,9 @@ class BottomNavBar extends StatelessWidget {
       // 下列兩個屬性為true，文字才會出現
       showSelectedLabels: true,
       showUnselectedLabels: true,
+      // 選中時文字大小改為12.0，預設14.0會讓navbar看起來太大
+      selectedFontSize: 12.0,
+      iconSize: 20.0,
       selectedItemColor: Theme.of(context).primaryColor,
       unselectedItemColor: Colors.grey,
       // .values可將enum轉成List<enum型別>，元素值為BottomNavItem.feed

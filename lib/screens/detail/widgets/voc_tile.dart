@@ -51,7 +51,7 @@ class VocTile extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '$chinese',
-                        style: TextStyle(fontSize: 16.0),
+                        style: TextStyle(fontSize: 16.0, fontFamily: 'Noto'),
                       ),
                     ),
                   ],

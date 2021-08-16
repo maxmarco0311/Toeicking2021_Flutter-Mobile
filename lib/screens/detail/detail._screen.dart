@@ -1,9 +1,8 @@
 // import 'package:expandable_bottom_sheet/expandable_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:toeicking2021/custom_packages/packages.dart';
 import 'package:toeicking2021/cubits/cubits.dart';
+import 'package:toeicking2021/custom_packages/packages.dart';
 import 'package:toeicking2021/models/models.dart';
 import 'package:toeicking2021/repositories/repositories.dart';
 import 'package:toeicking2021/screens/detail/widgets/widgets.dart';
@@ -50,7 +49,7 @@ class DetailScreen extends StatefulWidget {
 
 class _DetailScreenState extends State<DetailScreen> {
   // ExpandableBottomSheetStaten所需的key，才可呼叫一些方法
-  GlobalKey<ExpandableBottomSheetState> _key = GlobalKey();
+  GlobalKey<ExpandableBottomSheetState> _expandableKey = GlobalKey();
   // 判斷箭頭圖示用的變數
   bool isArrowDown = false;
   @override
@@ -67,11 +66,9 @@ class _DetailScreenState extends State<DetailScreen> {
       // ExpandableBottomSheet()物件要放在body屬性值
       body: ExpandableBottomSheet(
         // 要有key
-        key: _key,
+        key: _expandableKey,
         // 下拉"到底"會觸發的callback
-        onIsContractedCallback: () {
-          setState(() => isArrowDown = false);
-        },
+        onIsContractedCallback: () => setState(() => isArrowDown = false),
         // 上拉"到底"會觸發的callback
         onIsExtendedCallback: () => setState(() => isArrowDown = true),
         // 點按header會toggle
@@ -80,8 +77,8 @@ class _DetailScreenState extends State<DetailScreen> {
         // 使用TabBar最外層要包DefaultTabController
         background: DefaultTabController(
           length: 3,
-          // TabBarView一般一定要給固定高度，若要用SingleChildScrollView
-          // 必須使用NestedScrollView，把TabBarView放在其body屬性值裡
+          // TabBarView一般一定要給固定高度，但高度若是動態的，又要可滑動
+          // 就必須使用NestedScrollView(或CustomScrollView)，把TabBarView放在其body屬性值裡
           child: NestedScrollView(
             scrollDirection: Axis.vertical,
             // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
@@ -94,185 +91,26 @@ class _DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   children: [
                     //1. 句子與翻譯
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 25.0, vertical: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.sentenceBundle.sentence.sen,
-                            // Theme.of(context).textTheme.headline6
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.start,
-                          ),
-                          SizedBox(height: 10.0),
-                          Text(
-                            widget.sentenceBundle.sentence.chinesese,
-                            style: TextStyle(
-                              fontSize: 16.0,
-                              color: Colors.black,
-                              letterSpacing: 1.0,
-                            ),
-                          )
-                        ],
-                      ),
+                    DetailSentenceContainer(
+                      sentenceBundle: widget.sentenceBundle,
                     ),
-                    // 2. TabBar
-                    Container(
-                      decoration: BoxDecoration(
-                        // 有設BoxDecoration的話，color就要放在裡面，否則會報錯
-                        color: Colors.white,
-                        // 左右圓角
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
-                        // container陰影
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black12,
-                            offset: Offset(0, -1),
-                            blurRadius: 6.0,
-                          ),
-                        ],
-                      ),
-                      child: TabBar(
-                        indicatorWeight: 3.0,
-                        // 被選中的tab文字顏色
-                        labelColor: Theme.of(context).primaryColor,
-                        //沒被選中的tab文字顏色
-                        unselectedLabelColor: Colors.black87,
-                        //被選中的tab文字樣式，通常會是粗體
-                        labelStyle: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.0,
-                        ),
-                        //沒被選中的tab文字樣式，通常沒有粗體
-                        unselectedLabelStyle: TextStyle(
-                          fontSize: 16.0,
-                          letterSpacing: 1.0,
-                        ),
-                        tabs: [
-                          Tab(text: "必考字彙"),
-                          Tab(text: "字彙解析"),
-                          Tab(text: "文法解析"),
-                        ],
-                      ),
-                    ),
+                    // 2. TabBar(外包一個Container()可以做外型客製化)
+                    TabBarContainer(),
                   ],
                 ),
               )
             ],
-            // NestedScrollView的必備屬性(要scroll的widget放在這)
-            body: TabBarView(
-              children: [
-                // 必考字彙
-                // ListView的padding，每個tab都要一樣
-                // 也跟上面句子容器的左右padding(25.0)一樣，看起來會比較整齊
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 15.0, horizontal: 25.0),
-                  child: ListView.builder(
-                    itemCount: widget.sentenceBundle.vocabularies.length,
-                    itemBuilder: (context, index) {
-                      Vocabulary vocabulary =
-                          widget.sentenceBundle.vocabularies[index];
-                      return VocTile(
-                        sentenceId: vocabulary.sentenceId,
-                        vocabularyId: vocabulary.vocabularyId,
-                        voc: vocabulary.voc,
-                        category: vocabulary.category,
-                        chinese: vocabulary.chinese,
-                      );
-                    },
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Text("字彙解析"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Center(
-                          child: Text("文法解析"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
+            // 3. TabBarView
+            body: DetailTabBarView(
+              sentenceBundle: widget.sentenceBundle,
             ),
           ),
         ),
         // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)
-        persistentHeader: Container(
-          // 會影響divider左右兩邊與螢幕的距離
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          // 圓角外型
-          decoration: BoxDecoration(
-            // 如果要設decoration屬性，就得把color屬性放進BoxDecoration()裡，否則會報錯
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // 使用SizedBox()包住chidren widget，並設定高度後是去掉原有padding的方式
-              SizedBox(
-                height: 45.0,
-                child: Padding(
-                    // 調整箭頭上下
-                    padding: const EdgeInsets.only(top: 8.0),
-                    // 用isArrowDown判斷要顯示向上或向下的箭頭
-                    child: isArrowDown
-                        ? IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              size: 40.0,
-                            ),
-                            // 向下箭頭點按後會收合到底(會觸發onIsContractedCallback)
-                            onPressed: () => _key.currentState.contract(),
-                          )
-                        // 因為一進入頁面expandable bottom sheet打不開，所以預設用TextButton.icon
-                        : TextButton.icon(
-                            // 顏色在這換
-                            style: TextButton.styleFrom(
-                              primary: Colors.black,
-                            ),
-                            // 點按後會展開到最大(會觸發onIsExtendedCallback)
-                            onPressed: () => _key.currentState.expand(),
-                            // Icon(Icons.keyboard_voice_sharp)
-                            icon: Icon(MdiIcons.waveform),
-                            label: Text('音檔播放介面'),
-                          )),
-              ),
-              SizedBox(
-                height: 15.0,
-                child: Divider(color: Colors.grey.shade900),
-              ),
-            ],
-          ),
-        ),
-        // expandableContent是必要屬性：為可收合部份的widget-->player
-        // 靠BlocBuilder重繪
+        persistentHeader: PlayerHeader(
+            isArrowDown: isArrowDown, expandableKey: _expandableKey),
+        // expandableContent是必要屬性：為可收合部份的widget-->player(靠BlocBuilder重繪)
         expandableContent: BlocBuilder<AudioSettingCubit, AudioSettingState>(
           // // 這裡的buildWhen沒作用
           // buildWhen: (previous, current) {
@@ -299,7 +137,7 @@ class _DetailScreenState extends State<DetailScreen> {
                 cubit: cubit,
                 // 傳入player widget用來收合player的函式，用callback方式傳入
                 // player屬性型別用Function即可
-                contractPlayer: () => _key.currentState.contract(),
+                contractPlayer: () => _expandableKey.currentState.contract(),
               );
             } else if (state.status == Status.failure) {
               return Center(
@@ -352,12 +190,7 @@ class _DetailScreenState extends State<DetailScreen> {
         // 點按不能關bottom sheet
         // isDismissible: false,
         // 圓角外型用RoundedRectangleBorder()就好
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
-          ),
-        ),
+        shape: kBottomSheetTopRoundedCorner,
         // 兩個必備屬性
         context: context,
         // 不需要用builder的context

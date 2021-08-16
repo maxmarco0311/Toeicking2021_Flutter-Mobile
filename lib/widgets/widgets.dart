@@ -4,4 +4,4 @@ export 'sentenceTile.dart';
 export 'custom_elevated_button.dart';
 export 'player.dart';
 export 'bottom_sheet_content.dart';
-export 'ui_const.dart';
+export '../config/ui_const.dart';
