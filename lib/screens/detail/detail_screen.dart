@@ -102,9 +102,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ],
             // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
             // 3. TabBarView
-            body: DetailTabBarView(
-              sentenceBundle: widget.sentenceBundle,
-            ),
+            body: DetailTabBarView(sentenceBundle: widget.sentenceBundle),
           ),
         ),
         // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)

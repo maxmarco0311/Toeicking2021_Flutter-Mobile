@@ -25,6 +25,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // 取得文字框的值
   TextEditingController _controller = TextEditingController();
+  // validator判斷的變數
   bool isEmailExist;
 
   @override
@@ -75,6 +76,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   // _controller.text不會自動有值，需要透過onChanged或onSaved賦值
                   onChanged: (value) => _controller.text = value,
                   validator: (value) {
+                    // 判斷isEmailExist
                     return isEmailExist ? null : '此電子郵件尚未註冊！';
                   },
                 ),
@@ -86,25 +88,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             CustomElevatedButton(
               text: '送出',
               onPressed: () async {
-                // 因為validator不能用非同步，所以要將函式(_checkEmail)獨立
-                // 在按鈕的onPressed callback呼叫取得布林值
+                // 因為validator不能用非同步，所以要將函式_checkEmail獨立
+                // 在按鈕的onPressed callback中呼叫_checkEmail取得布林值
                 // 再用setState更新全域變數isEmailExist(在validator callback裡面判斷)
                 print('value:${_controller.text}');
+                // 用_controller.text取得文字框的值，呼叫API
                 var response = await _checkEmail(_controller.text);
-                // setState不可使用非同步
+                // 將結果同步更新給isEmailExist(setState不可使用非同步)
                 setState(() => isEmailExist = response);
-                // 下一步檢查是否符合驗證
+                // 檢查文字框(或表單)值是否符合驗證，再做下一步動作
                 if (_formKey.currentState.validate()) {
                   AuthRepository _authRepository = AuthRepository();
-                  // 這是登出時讀取firestore，所以要修改firestore rules
-
+                  // firebase寄出重設密碼驗證信
                   _authRepository.resetPassword(email: _controller.text);
                   // 導向webview
                   Navigator.of(context).pushNamed(
                     WebviewScreen.routeName,
                     arguments: WebviewScreenArgs(
                       title: '重設密碼',
-                      flushBarMessage: '請至maxmarco0311@gmail.com收信，完成重設密碼程序',
+                      flushBarMessage: '請至${_controller.text}收信，完成重設密碼程序',
                       sourcePage: 'forgotPassword',
                     ),
                   );
@@ -121,8 +123,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
+  // 檢查EMAIL是否有註冊
   Future<bool> _checkEmail(String email) async {
-    UserRepository _userRepository = UserRepository();
-    return await _userRepository.isEmailExist(email: email);
+    // 使用自己的資料庫做API查詢，就不用更改Firestore的security rules
+    // 因為登出情況下是不能讀寫Firestore
+    // APIRepository要用工廠建構式APIRepository.instance
+    APIRepository _apiRepository = APIRepository.instance;
+    return _apiRepository.checkEmail(email: email);
   }
 }

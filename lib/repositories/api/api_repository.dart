@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:toeicking2021/blocs/blocs.dart';
 import 'package:toeicking2021/models/db_user_model.dart';
 import 'package:toeicking2021/models/sentenceBundle_model.dart';
 import 'package:toeicking2021/repositories/api/base_api_repository.dart';
@@ -66,7 +67,7 @@ class APIRepository extends BaseAPIRepository {
 
   // 3. 獲得使用者資料(GET)-->checked!
   @override
-  Future<User> getUser({String email}) async {
+  Future<UserState> getUser({String email}) async {
     // 參數範例：{'FormData.Keyword': 'absolutely'}
     // 參數範例：{'C#物件屬性名稱': 值}
     Uri uri = Uri.https(
@@ -77,7 +78,9 @@ class APIRepository extends BaseAPIRepository {
     );
     var response = await http.get(uri, headers: _headers);
     if (response.statusCode == 200) {
-      return User.fromJson(response.body);
+      print('api getUser: ${response.body}');
+      // 直接裝回UserState物件
+      return UserState.fromJson(response.body);
     } else {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
@@ -101,7 +104,7 @@ class APIRepository extends BaseAPIRepository {
 
   // 5. 加入WordList(POST)-->checked!(第一次加入原本有bug，已解掉)
   @override
-  Future<User> addWordList({String email, String vocabularyId}) async {
+  Future<UserState> addWordList({String email, String vocabularyId}) async {
     Uri uri = Uri.https(_baseUrl, '/User/AddWordList');
     var response = await http.post(
       uri,
@@ -113,7 +116,7 @@ class APIRepository extends BaseAPIRepository {
       ),
     );
     if (response.statusCode == 200) {
-      return User.fromJson(response.body);
+      return UserState.fromJson(response.body);
     } else {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
@@ -134,6 +137,26 @@ class APIRepository extends BaseAPIRepository {
       // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
       // 然後呼叫fromMap()不是fromJson()
       return SentenceBundle.fromMap(sourceMap['data']);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 7. 檢查Email是否存在
+  @override
+  Future<bool> checkEmail({String email}) async {
+    Uri uri = Uri.https(_baseUrl, '/User/IsEmailExist');
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      // body要傳送的資料沒有包成物件，就直接寫成Map給json.encode()處理成Json字串
+      // ***但C#端一定要將資料包成一個物件當API參數***
+      // 注意key要寫成跟C#物件屬性名稱完全一樣(注意大小寫)
+      body: json.encode({'Email': email}),
+    );
+    if (response.statusCode == 200) {
+      // 因為只有回傳bool，所以不需要用物件的fromMap()
+      return json.decode(response.body);
     } else {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }

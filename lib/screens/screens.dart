@@ -5,7 +5,7 @@ export 'signup/signup_screen.dart';
 export 'nav/nav_screen.dart';
 export 'webview/webview.dart';
 export 'mode/mode_screen.dart';
-export 'detail/detail._screen.dart';
+export 'detail/detail_screen.dart';
 export 'students/students_screen.dart';
 export 'word_list/word_list_screen.dart';
 export 'others/other_screen.dart';

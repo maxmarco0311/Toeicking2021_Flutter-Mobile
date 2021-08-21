@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+
 import 'package:toeicking2021/enums/bottom_nav_item.dart';
 import 'package:toeicking2021/screens/nav/cubit/bottom_nav_bar_cubit.dart';
 import 'package:toeicking2021/screens/nav/widgets/widgets.dart';
@@ -8,6 +9,10 @@ import 'package:toeicking2021/screens/nav/widgets/widgets.dart';
 class NavScreen extends StatelessWidget {
   static const String routeName = '/nav';
 
+  // 建構式
+  NavScreen({
+    Key key,
+  }) : super(key: key);
   static Route route() {
     // PageRouteBuilder是可以設計動畫的換頁，這裡利用transitionDuration為0
     // 讓此頁是感覺疊加在SplashScreen上出現，MaterialPageRoute頁面是由側邊滑入的
@@ -20,9 +25,6 @@ class NavScreen extends StatelessWidget {
       ),
     );
   }
-
-  // NavScreen不用建構式
-  NavScreen({Key key}) : super(key: key);
 
   // 每一個bottom item都要有一個個別的GlobalKey<NavigatorState>，才可以追蹤navigation狀態
   final Map<BottomNavItem, GlobalKey<NavigatorState>> navigatorKeys = {

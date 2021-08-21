@@ -76,6 +76,7 @@ class _SplashScreenState extends State<SplashScreen>
             // 導向Login Screen.
             Navigator.of(context).pushNamed(LoginScreen.routeName);
           } else if (state.status == AuthStatus.authenticated) {
+            print(state.user.email);
             // 導向Nav Screen.
             Navigator.of(context).pushNamed(NavScreen.routeName);
           } else if (state.status == AuthStatus.unverified) {

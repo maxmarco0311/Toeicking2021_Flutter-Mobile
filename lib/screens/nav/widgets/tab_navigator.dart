@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:toeicking2021/blocs/blocs.dart';
 import 'package:toeicking2021/config/custom_router.dart';
-
 import 'package:toeicking2021/enums/bottom_nav_item.dart';
 import 'package:toeicking2021/repositories/repositories.dart';
 import 'package:toeicking2021/screens/screens.dart';
@@ -13,6 +13,7 @@ class TabNavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   // 從Offstage()傳過來所選中的nav_item
   final BottomNavItem item;
+  // 建構式
   const TabNavigator({
     Key key,
     @required this.navigatorKey,
@@ -78,7 +79,7 @@ class TabNavigator extends StatelessWidget {
             // 頁面建立時建立SentenceBundleBloc，SentenceBundleBloc建立時觸發SentenceBundleLoad事件
           )..add(
               SentenceBundleLoad(
-                email: 'maxmarco0311@gmail.com',
+                email: context.read<AuthBloc>().state.user.email,
                 // 參數範例：{'FormData.Keyword': 'absolutely'}
                 parameters: {},
               ),

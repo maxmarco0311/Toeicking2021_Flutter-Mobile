@@ -15,7 +15,7 @@ class SentenceBundleLoad extends SentenceBundleEvent {
     @required this.email,
     @required this.parameters,
   });
-
   @override
   List<Object> get props => [email, parameters];
 }
+

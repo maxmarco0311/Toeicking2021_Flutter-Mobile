@@ -27,10 +27,12 @@ class SentenceBundleBloc
     }
   }
 
+  // 載入符合條件的句子
   Stream<SentenceBundleState> _mapSentenceBundleLoadToState(
     SentenceBundleLoad event,
   ) async* {
     yield state.copyWith(status: SentenceBundleStateStatus.loading);
+    // 撈符合條件的sentenceBundles
     List<SentenceBundle> sentenceBundles =
         await _apiRepository.getSentenceBundles(
       email: event.email,
@@ -38,6 +40,7 @@ class SentenceBundleBloc
     );
     yield state.copyWith(
       sentenceBundles: sentenceBundles,
+      // user: user,
       status: SentenceBundleStateStatus.loaded,
     );
   }

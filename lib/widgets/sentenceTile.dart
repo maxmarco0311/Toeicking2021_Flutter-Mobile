@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
 import 'package:toeicking2021/models/models.dart';
-import 'package:toeicking2021/screens/detail/detail._screen.dart';
+import 'package:toeicking2021/screens/detail/detail_screen.dart';
 
 class SentenceTile extends StatelessWidget {
   final SentenceBundle sentenceBundle;

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:toeicking2021/blocs/blocs.dart';
+import 'package:toeicking2021/models/models.dart';
 
 class VocTile extends StatelessWidget {
-  final int sentenceId;
-  final int vocabularyId;
-  final String voc;
-  final String category;
-  final String chinese;
+  final Vocabulary vocabulary;
+  final UserBloc bloc;
+  final String email;
+  final bool isInWordList;
+
   const VocTile({
     Key key,
-    @required this.sentenceId,
-    @required this.vocabularyId,
-    @required this.voc,
-    @required this.category,
-    @required this.chinese,
+    @required this.vocabulary,
+    @required this.bloc,
+    @required this.email,
+    @required this.isInWordList,
   }) : super(key: key);
 
   @override
@@ -37,20 +38,20 @@ class VocTile extends StatelessWidget {
                   children: [
                     // 字彙
                     Text(
-                      voc,
+                      vocabulary.voc,
                       style: TextStyle(fontSize: 16.0),
                     ),
                     SizedBox(width: 8.0),
                     // 詞性
                     Text(
-                      '($category.)',
+                      '(${vocabulary.category}.)',
                       style: TextStyle(fontSize: 16.0),
                     ),
                     SizedBox(width: 8.0),
                     // 中文(Text()外包Expanded()可多行顯示文字)
                     Expanded(
                       child: Text(
-                        '$chinese',
+                        vocabulary.chinese,
                         style: TextStyle(fontSize: 16.0, fontFamily: 'Noto'),
                       ),
                     ),
@@ -63,12 +64,25 @@ class VocTile extends StatelessWidget {
                 // 用IconButton()排版怪怪的，所以用GestureDetector()
                 child: GestureDetector(
                   onTap: () {
-                    print('tap!');
+                    // 如果沒有加入字彙列表
+                    if (!isInWordList) {
+                      // 按下去加入字彙列表
+                      bloc.add(
+                        AddWordList(
+                            email: email,
+                            vocabularyId: vocabulary.vocabularyId),
+                      );
+                    }
                   },
-                  child: Icon(
-                    MdiIcons.heartOutline,
-                    color: Colors.grey,
-                  ),
+                  child: isInWordList
+                      ? Icon(
+                          MdiIcons.heart,
+                          color: Colors.red[400],
+                        )
+                      : Icon(
+                          MdiIcons.heartOutline,
+                          color: Colors.grey,
+                        ),
                 ),
               ),
             ],

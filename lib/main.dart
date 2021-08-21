@@ -66,6 +66,11 @@ class MyApp extends StatelessWidget {
               apiRepository: context.read<APIRepository>(),
             ),
           ),
+          BlocProvider<UserBloc>(
+            create: (context) => UserBloc(
+              apiRepository: context.read<APIRepository>(),
+            ),
+          ),
         ],
         child: MaterialApp(
           title: '多益金',

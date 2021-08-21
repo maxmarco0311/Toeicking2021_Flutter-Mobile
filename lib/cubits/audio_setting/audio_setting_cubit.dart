@@ -183,39 +183,39 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     return localAudioState;
   }
 
-  // ***以下為API方法，要另外設bloc或cubit放***
-  // 測試API用的方法
-  Future<User> updateUser({@required User user}) async {
-    return await _apiRepository.updateUser(user: user);
-  }
+  // // ***以下為API方法，要另外設bloc或cubit放***
+  // // 測試API用的方法
+  // Future<User> updateUser({@required User user}) async {
+  //   return await _apiRepository.updateUser(user: user);
+  // }
 
-  // 測試API用的方法
-  Future<User> addWordList({
-    @required String email,
-    @required String vocabularyId,
-  }) async {
-    return await _apiRepository.addWordList(
-      email: email,
-      vocabularyId: vocabularyId,
-    );
-  }
+  // // 測試API用的方法
+  // Future<User> addWordList({
+  //   @required String email,
+  //   @required String vocabularyId,
+  // }) async {
+  //   return await _apiRepository.addWordList(
+  //     email: email,
+  //     vocabularyId: vocabularyId,
+  //   );
+  // }
 
-  // 測試API用的方法
-  Future<User> addUser({@required User user}) async {
-    return await _apiRepository.addUser(user: user);
-  }
+  // // 測試API用的方法
+  // Future<User> addUser({@required User user}) async {
+  //   return await _apiRepository.addUser(user: user);
+  // }
 
-  // 測試API用的方法
-  Future<User> getUser({@required String email}) async {
-    return await _apiRepository.getUser(email: email);
-  }
+  // // 測試API用的方法
+  // Future<User> getUser({@required String email}) async {
+  //   return await _apiRepository.getUser(email: email);
+  // }
 
-  // 測試API用的方法
-  Future<SentenceBundle> getSentenceBundleByVocabularyId(
-      {String email, String vocabularyId}) async {
-    return await _apiRepository.getSentenceBundleByVocabularyId(
-      email: email,
-      vocabularyId: vocabularyId,
-    );
-  }
+  // // 測試API用的方法
+  // Future<SentenceBundle> getSentenceBundleByVocabularyId(
+  //     {String email, String vocabularyId}) async {
+  //   return await _apiRepository.getSentenceBundleByVocabularyId(
+  //     email: email,
+  //     vocabularyId: vocabularyId,
+  //   );
+  // }
 }

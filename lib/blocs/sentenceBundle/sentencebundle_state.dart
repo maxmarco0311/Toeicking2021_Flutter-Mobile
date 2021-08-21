@@ -21,10 +21,10 @@ class SentenceBundleState extends Equatable {
   @override
   List<Object> get props => [sentenceBundles, status];
 
-  SentenceBundleState copyWith({
-    List<SentenceBundle> sentenceBundles,
-    SentenceBundleStateStatus status,
-  }) {
+  SentenceBundleState copyWith(
+      {List<SentenceBundle> sentenceBundles,
+      SentenceBundleStateStatus status,
+      User user}) {
     return SentenceBundleState(
       sentenceBundles: sentenceBundles ?? this.sentenceBundles,
       status: status ?? this.status,
