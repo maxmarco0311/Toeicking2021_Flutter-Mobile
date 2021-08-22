@@ -29,6 +29,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       yield* _mapUserFetchToState(event);
     } else if (event is AddWordList) {
       yield* _mapAddWordListToState(event);
+    } else if (event is DeleteWordList) {
+      yield* _mapDeleteWordListToState(event);
     }
   }
 
@@ -46,6 +48,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   // 加入wordList
   Stream<UserState> _mapAddWordListToState(AddWordList event) async* {
     UserState user = await _apiRepository.addWordList(
+        email: event.email, vocabularyId: event.vocabularyId.toString());
+    yield state.copyWith(
+      wordList: user.wordList,
+    );
+  }
+
+  // 從wordList中刪除
+  Stream<UserState> _mapDeleteWordListToState(DeleteWordList event) async* {
+    UserState user = await _apiRepository.deleteWordList(
         email: event.email, vocabularyId: event.vocabularyId.toString());
     yield state.copyWith(
       wordList: user.wordList,

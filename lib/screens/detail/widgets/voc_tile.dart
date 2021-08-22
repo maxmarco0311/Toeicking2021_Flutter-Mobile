@@ -72,6 +72,14 @@ class VocTile extends StatelessWidget {
                             email: email,
                             vocabularyId: vocabulary.vocabularyId),
                       );
+                      // 如果有加入字彙列表
+                    } else if (isInWordList) {
+                      // 按下去從字彙列表中刪除
+                      bloc.add(
+                        DeleteWordList(
+                            email: email,
+                            vocabularyId: vocabulary.vocabularyId),
+                      );
                     }
                   },
                   child: isInWordList

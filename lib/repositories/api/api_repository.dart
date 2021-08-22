@@ -22,7 +22,7 @@ class APIRepository extends BaseAPIRepository {
   // 不用建構式
   // APIRepository();
 
-  // 1. 獲得所有SentenceBundles(GET)-->checked!
+  // 獲得所有SentenceBundles(GET)-->checked!
   @override
   Future<List<SentenceBundle>> getSentenceBundles({
     // email參數是讓後端檢查這個api請求的user是否為valid
@@ -49,7 +49,7 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 2. 新增使用者資料(POST)-->checked!
+  // 新增使用者資料(POST)-->checked!
   @override
   Future<User> addUser({User user}) async {
     Uri uri = Uri.https(_baseUrl, '/User/Add');
@@ -65,7 +65,7 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 3. 獲得使用者資料(GET)-->checked!
+  // 獲得使用者資料(GET)-->checked!
   @override
   Future<UserState> getUser({String email}) async {
     // 參數範例：{'FormData.Keyword': 'absolutely'}
@@ -86,7 +86,7 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 4. 更新使用者資料(POST)-->checked!
+  // 更新使用者資料(POST)-->checked!
   @override
   Future<User> updateUser({@required User user}) async {
     Uri uri = Uri.https(_baseUrl, '/User/Update');
@@ -102,7 +102,7 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 5. 加入WordList(POST)-->checked!(第一次加入原本有bug，已解掉)
+  // 加入WordList(POST)-->checked!(第一次加入原本有bug，已解掉)
   @override
   Future<UserState> addWordList({String email, String vocabularyId}) async {
     Uri uri = Uri.https(_baseUrl, '/User/AddWordList');
@@ -122,7 +122,27 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 6. 依字彙編號取得sentenceBundle(GET)-->checked!
+// 從WordList中刪除(POST)
+  @override
+  Future<UserState> deleteWordList({String email, String vocabularyId}) async {
+    Uri uri = Uri.https(_baseUrl, '/User/DeleteWordList');
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      // body要傳送的資料沒有包成物件，就直接寫成Map給json.encode()處理成Json字串
+      // 注意key要寫成跟C#物件屬性名稱完全一樣(注意大小寫)
+      body: json.encode(
+        {'Email': email, 'VocabularyId': vocabularyId},
+      ),
+    );
+    if (response.statusCode == 200) {
+      return UserState.fromJson(response.body);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 依字彙編號取得sentenceBundle(GET)-->checked!
   @override
   Future<SentenceBundle> getSentenceBundleByVocabularyId(
       {String email, String vocabularyId}) async {
@@ -142,7 +162,7 @@ class APIRepository extends BaseAPIRepository {
     }
   }
 
-  // 7. 檢查Email是否存在
+  // 檢查Email是否存在
   @override
   Future<bool> checkEmail({String email}) async {
     Uri uri = Uri.https(_baseUrl, '/User/IsEmailExist');
