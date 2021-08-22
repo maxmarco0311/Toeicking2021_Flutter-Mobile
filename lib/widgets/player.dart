@@ -37,7 +37,7 @@ class Player extends StatefulWidget {
 }
 
 class _PlayerState extends State<Player> {
-  // 所有該頁狀態變數：
+  // 所有狀態變數：
   // 1. 播放用的player
   AssetsAudioPlayer _assetsAudioPlayer;
   // 2. 取得duration用的player
@@ -62,7 +62,7 @@ class _PlayerState extends State<Player> {
   StreamSubscription _audioSettingStatusSubscription;
   // 12. 控制設定重複播放後第一次播放必須是按play鍵的變數
   bool _holdPlay = false;
-  // // 13. 控制進入player頁面時重複播放次數大於0時不直接播放的變數
+  // 13. 控制進入player頁面時重複播放次數大於0時不直接播放的變數
   bool _initPlay = false;
   // getter也可以設定回傳值型別，此處呼叫自訂utilities方法回傳時間字串
   // 14. 取得歌曲時間字串
@@ -199,7 +199,12 @@ class _PlayerState extends State<Player> {
                           // 可以開始重複播放
                           _holdPlay = false;
                           // 重複播放的第一次播放，播放次數加1
-                          _playedTimes++;
+                          // ***但要檢查是PlayerState.stop的狀態才可以加1***
+                          // ***因為播放後按暫停後再播放也會經歷這個流程***
+                          // ***這個狀況下不可以加1，因為該次播放尚未完成***
+                          if (_playerState == PlayerState.stop) {
+                            _playedTimes++;
+                          }
                           _initPlay = true;
                         });
                       }
@@ -244,7 +249,7 @@ class _PlayerState extends State<Player> {
     });
     // 獲得歌曲總長的自訂方法
     _getDuration();
-    // 監聽"播放狀態"的stream，傳入一個PlayerState物件
+    // ***播放流程控制重點：監聽"播放狀態"的stream，傳入一個PlayerState物件***
     _playerStateSubscription =
         _assetsAudioPlayer.playerState.listen((playState) {
       // 這裡setState()就好了，其他地方不需要再設定PlayerState
