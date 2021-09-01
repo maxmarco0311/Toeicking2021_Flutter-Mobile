@@ -11,5 +11,7 @@ abstract class BaseAPIRepository {
   Future<UserState> deleteWordList({String email, String vocabularyId});
   Future<SentenceBundle> getSentenceBundleByVocabularyId(
       {String email, String vocabularyId});
+  Future<SentenceBundle> getSentenceBundleBySentenceId(
+      {String email, int sentenceId});
   Future<bool> checkEmail({String email});
 }

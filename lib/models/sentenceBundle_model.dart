@@ -13,15 +13,16 @@ class SentenceBundle extends Equatable {
   final Map<String, String> normalAudioUrls;
   final Map<String, String> fastAudioUrls;
   final Map<String, String> slowAudioUrls;
-
-  SentenceBundle(
-      {@required this.sentence,
-      @required this.vocabularies,
-      @required this.gas,
-      @required this.vas,
-      @required this.normalAudioUrls,
-      @required this.fastAudioUrls,
-      @required this.slowAudioUrls});
+  // 要加const，不然無法用在State的initial初始設定式
+  const SentenceBundle({
+    @required this.sentence,
+    @required this.vocabularies,
+    @required this.gas,
+    @required this.vas,
+    @required this.normalAudioUrls,
+    @required this.fastAudioUrls,
+    @required this.slowAudioUrls,
+  });
 
   SentenceBundle copyWith({
     Sentence sentence,

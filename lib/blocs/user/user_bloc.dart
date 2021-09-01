@@ -34,6 +34,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
+  // 從db獲得user資料後放進state(生TabBarView時觸發)
   Stream<UserState> _mapUserFetchToState(UserFetch event) async* {
     UserState user = await _apiRepository.getUser(email: event.email);
     print('getUser called!');

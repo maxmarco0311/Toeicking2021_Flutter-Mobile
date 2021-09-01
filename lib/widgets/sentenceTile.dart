@@ -35,7 +35,10 @@ class SentenceTile extends StatelessWidget {
               Navigator.of(context).pushNamed(
                 // 進入Detaile頁面
                 DetailScreen.routeName,
-                arguments: DetailScreenArgs(sentenceBundle: sentenceBundle),
+                arguments: DetailScreenArgs(
+                  sentenceBundle: sentenceBundle,
+                  fromWordList: false,
+                ),
               );
             },
             icon: Icon(Icons.arrow_forward_ios),

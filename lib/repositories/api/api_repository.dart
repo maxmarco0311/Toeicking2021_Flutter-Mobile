@@ -161,6 +161,25 @@ class APIRepository extends BaseAPIRepository {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
   }
+  // 依句子編號取得sentenceBundle(GET)-->checked!
+  @override
+  Future<SentenceBundle> getSentenceBundleBySentenceId(
+      {String email, int sentenceId}) async {
+    Uri uri = Uri.https(
+      _baseUrl,
+      '/Sentence/GetSentenceBySentenceId',
+      {'Email': email, 'SentenceId': sentenceId},
+    );
+    var response = await http.get(uri, headers: _headers);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> sourceMap = json.decode(response.body);
+      // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
+      // 然後呼叫fromMap()不是fromJson()
+      return SentenceBundle.fromMap(sourceMap['data']);
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
 
   // 檢查Email是否存在
   @override

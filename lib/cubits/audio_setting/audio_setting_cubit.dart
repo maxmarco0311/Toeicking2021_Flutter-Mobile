@@ -10,14 +10,13 @@ part 'audio_setting_state.dart';
 class AudioSettingCubit extends Cubit<AudioSettingState> {
   // 此cubit會用到的repository：
   final LocalDataRepository _localDataRepository;
-  final APIRepository _apiRepository;
+
   // cubit建構式
   AudioSettingCubit({
     @required LocalDataRepository localDataRepository,
     @required APIRepository apiRepository,
   })  : _localDataRepository =
             localDataRepository ?? LocalDataRepository.instance,
-        _apiRepository = apiRepository ?? APIRepository.instance,
         super(
           // 初始的state資料，會被getLocalAudioSettingState()所獲得的資料蓋過去
           AudioSettingState.initial(),

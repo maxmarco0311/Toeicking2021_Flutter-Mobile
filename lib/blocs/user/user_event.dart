@@ -7,6 +7,7 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
+// 從db獲得user資料後放進state
 class UserFetch extends UserEvent {
   final String email;
   UserFetch({

@@ -8,6 +8,8 @@ import 'package:toeicking2021/widgets/widgets.dart';
 class BottomSheetContent extends StatefulWidget {
   final BuildContext context;
   final AudioSettingCubit cubit;
+  // 在DetailScreen初始時就初始AudioSettingCubit，然後呼叫getLocalAudioSettingState()
+  // 來獲得state資料再傳入這裡，有點太上層了，可以再改進
   final AudioSettingState state;
   const BottomSheetContent({
     Key key,

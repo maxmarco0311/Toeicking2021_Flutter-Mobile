@@ -24,6 +24,8 @@ class SentenceBundleBloc
   ) async* {
     if (event is SentenceBundleLoad) {
       yield* _mapSentenceBundleLoadToState(event);
+    } else if (event is SentenceBundleLoadBySentenceId) {
+      yield* _mapSentenceBundleLoadBySentenceIdToState(event);
     }
   }
 
@@ -40,6 +42,24 @@ class SentenceBundleBloc
     );
     yield state.copyWith(
       sentenceBundles: sentenceBundles,
+      // user: user,
+      status: SentenceBundleStateStatus.loaded,
+    );
+  }
+
+  // 依句子編號查出sentenceBundle
+  Stream<SentenceBundleState> _mapSentenceBundleLoadBySentenceIdToState(
+    SentenceBundleLoadBySentenceId event,
+  ) async* {
+    yield state.copyWith(status: SentenceBundleStateStatus.loading);
+    // 依編號查出sentenceBundle
+    SentenceBundle sentenceBundle =
+        await _apiRepository.getSentenceBundleBySentenceId(
+      email: event.email,
+      sentenceId: event.sentenceId,
+    );
+    yield state.copyWith(
+      sentenceBundle: sentenceBundle,
       // user: user,
       status: SentenceBundleStateStatus.loaded,
     );

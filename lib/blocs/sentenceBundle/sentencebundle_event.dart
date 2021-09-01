@@ -18,4 +18,14 @@ class SentenceBundleLoad extends SentenceBundleEvent {
   @override
   List<Object> get props => [email, parameters];
 }
+class SentenceBundleLoadBySentenceId extends SentenceBundleEvent {
+  final String email;
+  final int sentenceId;
 
+  SentenceBundleLoadBySentenceId({
+    @required this.email,
+    @required this.sentenceId,
+  });
+  @override
+  List<Object> get props => [email, sentenceId];
+}
