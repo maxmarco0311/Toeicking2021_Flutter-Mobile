@@ -8,9 +8,11 @@ import 'package:toeicking2021/screens/detail/widgets/widgets.dart';
 // TabBar View
 class DetailTabBarView extends StatelessWidget {
   final SentenceBundle sentenceBundle;
+  final TabController controller;
   const DetailTabBarView({
     Key key,
     @required this.sentenceBundle,
+    @required this.controller,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,7 @@ class DetailTabBarView extends StatelessWidget {
           UserFetch(email: context.read<AuthBloc>().state.user.email),
         ),
       child: TabBarView(
+        controller: controller,
         children: [
           // 1. 必考字彙
           // ListView的padding，每個tab都要一樣

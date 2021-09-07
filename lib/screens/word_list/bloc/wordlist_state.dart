@@ -1,5 +1,7 @@
 part of 'wordlist_bloc.dart';
 
+enum WordlistStateStatus { initial, loading, loaded, error }
+
 class WordlistState extends Equatable {
   // 進入這頁的初始搜尋條件
   final String initSearchCondition;
@@ -15,16 +17,18 @@ class WordlistState extends Equatable {
   final List<Vocabulary> searchedList;
   // 最近文字框內搜尋條件(字串)集合
   final List<String> recentSearchedStringList;
+  // 狀態
+  final WordlistStateStatus status;
 
-  const WordlistState({
-    @required this.initSearchCondition,
-    @required this.currentList,
-    @required this.currentPage,
-    @required this.paginatedList,
-    @required this.currentSearchCondition,
-    @required this.searchedList,
-    @required this.recentSearchedStringList,
-  });
+  const WordlistState(
+      {@required this.initSearchCondition,
+      @required this.currentList,
+      @required this.currentPage,
+      @required this.paginatedList,
+      @required this.currentSearchCondition,
+      @required this.searchedList,
+      @required this.recentSearchedStringList,
+      @required this.status});
 
   @override
   List<Object> get props {
@@ -39,7 +43,7 @@ class WordlistState extends Equatable {
     ];
   }
 
-  factory WordlistState.inital() {
+  factory WordlistState.initial() {
     return const WordlistState(
       initSearchCondition: '',
       currentList: [],
@@ -48,6 +52,7 @@ class WordlistState extends Equatable {
       currentSearchCondition: '',
       searchedList: [],
       recentSearchedStringList: [],
+      status: WordlistStateStatus.initial,
     );
   }
 
@@ -59,6 +64,7 @@ class WordlistState extends Equatable {
     String currentSearchCondition,
     List<Vocabulary> searchedList,
     List<String> recentSearchedStringList,
+    WordlistStateStatus status,
   }) {
     return WordlistState(
       initSearchCondition: initSearchCondition ?? this.initSearchCondition,
@@ -70,6 +76,7 @@ class WordlistState extends Equatable {
       searchedList: searchedList ?? this.searchedList,
       recentSearchedStringList:
           recentSearchedStringList ?? this.recentSearchedStringList,
+      status: status ?? this.status,
     );
   }
 }

@@ -8,15 +8,18 @@ abstract class WordlistEvent extends Equatable {
 }
 
 // 剛進入該頁，撈第一頁(頁面建立時就要觸發的)
-class WordlistInitLoad extends WordlistEvent {
-  final String condition;
-  final int pageSize;
-  final int currentPage;
-  WordlistInitLoad({
-    @required this.condition,
+class WordlistLoad extends WordlistEvent {
+  // 晚一點再測試篩選條件
+  // final String condition;
+  final String pageSize;
+  final String currentPage;
+  final String email;
+  WordlistLoad({
+    // @required this.condition,
     @required this.pageSize,
     @required this.currentPage,
+    @required this.email,
   });
   @override
-  List<Object> get props => [condition, pageSize, currentPage];
+  List<Object> get props => [pageSize, currentPage];
 }

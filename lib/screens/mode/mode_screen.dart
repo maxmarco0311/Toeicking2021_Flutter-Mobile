@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:toeicking2021/blocs/auth/auth_bloc.dart';
 import 'package:toeicking2021/blocs/blocs.dart';
-import 'package:toeicking2021/repositories/api/api_repository.dart';
 import 'package:toeicking2021/widgets/centered_text.dart';
 import 'package:toeicking2021/widgets/widgets.dart';
 
@@ -59,7 +58,7 @@ class _ModeScreenState extends State<ModeScreen> {
                   itemCount: state.sentenceBundles.length,
                   itemBuilder: (BuildContext context, int index) {
                     final sentenceBundle = state.sentenceBundles[index];
-                    final bloc = context.read<SentenceBundleBloc>();
+                    // final bloc = context.read<SentenceBundleBloc>();
                     // 將ListTile獨立出來-->SentenceTile()還要傳入user資料
                     return SentenceTile(sentenceBundle: sentenceBundle);
                   },

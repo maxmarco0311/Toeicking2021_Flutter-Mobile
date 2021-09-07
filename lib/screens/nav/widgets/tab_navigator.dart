@@ -6,6 +6,7 @@ import 'package:toeicking2021/config/custom_router.dart';
 import 'package:toeicking2021/enums/bottom_nav_item.dart';
 import 'package:toeicking2021/repositories/repositories.dart';
 import 'package:toeicking2021/screens/screens.dart';
+import 'package:toeicking2021/screens/word_list/bloc/wordlist_bloc.dart';
 
 class TabNavigator extends StatelessWidget {
   static const String tabNavigatorRoot = '/';
@@ -89,7 +90,19 @@ class TabNavigator extends StatelessWidget {
       case BottomNavItem.students:
         return StudentsScreen();
       case BottomNavItem.wordList:
-        return WordListScreen();
+        return BlocProvider<WordlistBloc>(
+          create: (context) => WordlistBloc(
+            apiRepository: context.read<APIRepository>(),
+          )..add(
+              WordlistLoad(
+                  // 載入第一頁
+                  currentPage: "1",
+                  // 每頁先7筆
+                  pageSize: "7",
+                  email: context.read<AuthBloc>().state.user.email),
+            ),
+          child: WordListScreen(),
+        );
       case BottomNavItem.others:
         return OtherScreen();
       default:

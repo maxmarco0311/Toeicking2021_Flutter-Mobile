@@ -80,6 +80,7 @@ class DetailScreen extends StatefulWidget {
               child: DetailScreen(
                 // 建構式不需要sentenceBundle，因為要從bloc裡面取
                 fromWordList: args.fromWordList,
+                sentenceId: args.sentenceId,
               ),
             )
           // 從mode來只要實體化一個bloc
@@ -102,13 +103,23 @@ class DetailScreen extends StatefulWidget {
   _DetailScreenState createState() => _DetailScreenState();
 }
 
-class _DetailScreenState extends State<DetailScreen> {
+class _DetailScreenState extends State<DetailScreen>
+    with SingleTickerProviderStateMixin {
   // ExpandableBottomSheetStaten所需的key，才可呼叫一些方法
   GlobalKey<ExpandableBottomSheetState> _expandableKey = GlobalKey();
   // 判斷箭頭圖示用的變數
   bool isArrowDown = false;
+  TabController _tabController;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
   @override
   Widget build(BuildContext context) {
+    print(
+        'fromWordList:${widget.fromWordList.toString()}, isArrowDown:${isArrowDown.toString()}');
     // 不同頁轉來的sentenceId(一定要用變數存起來，方便管理)
     int sentenceId = widget.fromWordList
         ? widget.sentenceId
@@ -149,36 +160,40 @@ class _DetailScreenState extends State<DetailScreen> {
                 enableToggle: true,
                 // background屬性值(必備)是此頁"非上下拉部份"的widget
                 // 使用TabBar最外層要包DefaultTabController
-                background: DefaultTabController(
-                  length: 3,
-                  // TabBarView一般一定要給固定高度，但高度若是動態的，又要可滑動
-                  // 就必須使用NestedScrollView(或CustomScrollView)，把TabBarView放在其body屬性值裡
-                  child: NestedScrollView(
-                    scrollDirection: Axis.vertical,
-                    // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
-                    // 回傳List<Widget>
-                    headerSliverBuilder:
-                        (BuildContext context, bool innerBoxIsScrolled) => [
-                      // 必須用SliverToBoxAdapter，才可有無限scroll的效果
-                      // Column()外也必須包SliverToBoxAdapter
-                      SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            //1. 句子與翻譯
-                            DetailSentenceContainer(
-                              sentenceBundle: sentenceState.sentenceBundle,
+                background: Column(
+                  children: [
+                    // ***1,2要放在NestedScrollView()的外面，不然會一起scroll***
+                    // 因為只要TabBarView的部份可以scroll就好
+                    //1. 句子與翻譯
+                    DetailSentenceContainer(
+                      sentenceBundle: sentenceState.sentenceBundle,
+                    ),
+                    // 2. TabBar(外包一個Container()可以做外型客製化)
+                    TabBarContainer(controller: _tabController),
+                    // ***要外包Expanded，NestedScrollView才可以放在column裡面***
+                    Expanded(
+                      child: NestedScrollView(
+                        scrollDirection: Axis.vertical,
+                        // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
+                        // 回傳List<Widget>
+                        headerSliverBuilder:
+                            (BuildContext context, bool innerBoxIsScrolled) => [
+                          // 必須用SliverToBoxAdapter，才可有無限scroll的效果
+                          // Column()外也必須包SliverToBoxAdapter
+                          SliverToBoxAdapter(
+                            child: Column(
+                              children: [],
                             ),
-                            // 2. TabBar(外包一個Container()可以做外型客製化)
-                            TabBarContainer(),
-                          ],
-                        ),
-                      )
-                    ],
-                    // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
-                    // 3. TabBarView
-                    body: DetailTabBarView(
-                        sentenceBundle: sentenceState.sentenceBundle),
-                  ),
+                          )
+                        ],
+                        // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
+                        // 3. TabBarView
+                        body: DetailTabBarView(
+                            controller: _tabController,
+                            sentenceBundle: sentenceState.sentenceBundle),
+                      ),
+                    ),
+                  ],
                 ),
                 // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)
                 persistentHeader: PlayerHeader(
@@ -237,36 +252,40 @@ class _DetailScreenState extends State<DetailScreen> {
                 enableToggle: true,
                 // background屬性值(必備)是此頁"非上下拉部份"的widget
                 // 使用TabBar最外層要包DefaultTabController
-                background: DefaultTabController(
-                  length: 3,
-                  // TabBarView一般一定要給固定高度，但高度若是動態的，又要可滑動
-                  // 就必須使用NestedScrollView(或CustomScrollView)，把TabBarView放在其body屬性值裡
-                  child: NestedScrollView(
-                    scrollDirection: Axis.vertical,
-                    // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
-                    // 回傳List<Widget>
-                    headerSliverBuilder:
-                        (BuildContext context, bool innerBoxIsScrolled) => [
-                      // 必須用SliverToBoxAdapter，才可有無限scroll的效果
-                      // Column()外也必須包SliverToBoxAdapter
-                      SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            //1. 句子與翻譯
-                            DetailSentenceContainer(
-                              sentenceBundle: widget.sentenceBundle,
+                background: Column(
+                  children: [
+                    // 1,2要放在NestedScrollView()的外面，不然會一起scroll
+                    // 因為只要TabBarView的部份可以scroll就好
+                    //1. 句子與翻譯
+                    DetailSentenceContainer(
+                      sentenceBundle: widget.sentenceBundle,
+                    ),
+                    // 2. TabBar(外包一個Container()可以做外型客製化)
+                    TabBarContainer(controller: _tabController),
+                    // 要外包Expanded，NestedScrollView才可以放在column裡面
+                    Expanded(
+                      child: NestedScrollView(
+                        scrollDirection: Axis.vertical,
+                        // headerSliverBuilder為必備屬性，callback function參數必須寫成如下
+                        // 回傳List<Widget>
+                        headerSliverBuilder:
+                            (BuildContext context, bool innerBoxIsScrolled) => [
+                          // 必須用SliverToBoxAdapter，才可有無限scroll的效果
+                          // Column()外也必須包SliverToBoxAdapter
+                          SliverToBoxAdapter(
+                            child: Column(
+                              children: [],
                             ),
-                            // 2. TabBar(外包一個Container()可以做外型客製化)
-                            TabBarContainer(),
-                          ],
-                        ),
-                      )
-                    ],
-                    // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
-                    // 3. TabBarView
-                    body:
-                        DetailTabBarView(sentenceBundle: widget.sentenceBundle),
-                  ),
+                          )
+                        ],
+                        // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
+                        // 3. TabBarView
+                        body: DetailTabBarView(
+                            controller: _tabController,
+                            sentenceBundle: widget.sentenceBundle),
+                      ),
+                    ),
+                  ],
                 ),
                 // header部份的widget(非必要屬性，不會隱藏)(灰色橫條容器 + 箭頭button + divider)
                 persistentHeader: PlayerHeader(

@@ -300,7 +300,11 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
         Transform.scale(
           scale: kRadioButtonScale,
           child: Radio<String>(
+            // value屬性值是選中這個radio時會取到的值，從參數中傳入
             value: genderValue,
+            // groupValue屬性值和value屬性值一樣時，代表這個radio選中了
+            // group radio中每個groupValue都要一樣，才能單選，所以屬性值要用變數
+            // 也是因為要從cubit裡獲得預設值
             groupValue: genderSelectedValue,
             // 選中時會觸發，傳入參數為value屬性值(genderValue)
             onChanged: (value) {

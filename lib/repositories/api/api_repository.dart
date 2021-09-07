@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:toeicking2021/blocs/blocs.dart';
 import 'package:toeicking2021/models/db_user_model.dart';
 import 'package:toeicking2021/models/sentenceBundle_model.dart';
+import 'package:toeicking2021/models/vocabulary_model.dart';
 import 'package:toeicking2021/repositories/api/base_api_repository.dart';
 
 class APIRepository extends BaseAPIRepository {
@@ -32,6 +33,7 @@ class APIRepository extends BaseAPIRepository {
     Uri uri = Uri.https(
       _baseUrl,
       '/Sentence/GetSentences',
+      // 參數寫在呼叫處
       parameters,
     );
     var response = await http.get(uri, headers: _headers);
@@ -45,6 +47,43 @@ class APIRepository extends BaseAPIRepository {
       );
       return sentences;
     } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
+
+  // 獲得字彙列表
+  @override
+  Future<List<Vocabulary>> getWordList({
+    String pageToLoad,
+    String pageSize,
+    String email,
+  }) async {
+    Uri uri = Uri.https(
+      _baseUrl,
+      '/Vocabulary/GetVocabularies',
+    );
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      body: json.encode(
+        {
+          'PageToLoad': pageToLoad,
+          'PageSize': pageSize,
+          'Email': email,
+        },
+      ),
+    );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> sourceMap = json.decode(response.body);
+      List<Vocabulary> vocabularies = List<Vocabulary>.from(
+        // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
+        sourceMap['data']?.map(
+          (vocabularyMap) => Vocabulary.fromMap(vocabularyMap),
+        ),
+      );
+      return vocabularies;
+    } else {
+      print(Exception().toString());
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
   }
@@ -161,10 +200,12 @@ class APIRepository extends BaseAPIRepository {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
   }
-  // 依句子編號取得sentenceBundle(GET)-->checked!
+
+  // 依句子編號取得sentenceBundle(GET)
   @override
   Future<SentenceBundle> getSentenceBundleBySentenceId(
-      {String email, int sentenceId}) async {
+      {String email, String sentenceId}) async {
+    // ***Uri.https()的queryParameters似乎只接受Map<String, String>，int會報錯!***
     Uri uri = Uri.https(
       _baseUrl,
       '/Sentence/GetSentenceBySentenceId',
@@ -173,6 +214,7 @@ class APIRepository extends BaseAPIRepository {
     var response = await http.get(uri, headers: _headers);
     if (response.statusCode == 200) {
       Map<String, dynamic> sourceMap = json.decode(response.body);
+      print(sourceMap.toString());
       // 真正的資料是在原始map中key為data的屬性值內，所以要先處理成sourceMap['data']
       // 然後呼叫fromMap()不是fromJson()
       return SentenceBundle.fromMap(sourceMap['data']);

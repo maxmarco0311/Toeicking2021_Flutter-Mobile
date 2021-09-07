@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 // TabBar
 class TabBarContainer extends StatelessWidget {
+  final TabController controller;
   const TabBarContainer({
+    @required this.controller,
     Key key,
   }) : super(key: key);
 
@@ -26,6 +28,7 @@ class TabBarContainer extends StatelessWidget {
         ],
       ),
       child: TabBar(
+        controller: controller,
         // 外型客製化要從indicator屬性下手，屬性值為BoxDecoration()
         indicator: BoxDecoration(
           // 選中時tab背景色

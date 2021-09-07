@@ -56,7 +56,7 @@ class SentenceBundleBloc
     SentenceBundle sentenceBundle =
         await _apiRepository.getSentenceBundleBySentenceId(
       email: event.email,
-      sentenceId: event.sentenceId,
+      sentenceId: event.sentenceId.toString(),
     );
     yield state.copyWith(
       sentenceBundle: sentenceBundle,

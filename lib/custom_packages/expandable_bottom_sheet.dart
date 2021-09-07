@@ -264,8 +264,8 @@ class ExpandableBottomSheetState extends State<ExpandableBottomSheet>
       _positionOutOfBounds();
     } else {
       setState(() {
-        // 改成_positionOffset = _minOffset;就可以預設打開
-        _positionOffset = _minOffset;
+        // ***改成_positionOffset = _minOffset;就可以預設打開***
+        _positionOffset = _maxOffset;
         _draggableHeight = _maxOffset - _minOffset;
       });
     }
