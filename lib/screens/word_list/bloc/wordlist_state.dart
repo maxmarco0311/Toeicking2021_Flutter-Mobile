@@ -1,6 +1,13 @@
 part of 'wordlist_bloc.dart';
 
-enum WordlistStateStatus { initial, loading, loaded, error }
+enum WordlistStateStatus {
+  initial,
+  loading,
+  loaded,
+  error,
+  paginating,
+  loadedOut
+}
 
 class WordlistState extends Equatable {
   // 進入這頁的初始搜尋條件
@@ -19,16 +26,20 @@ class WordlistState extends Equatable {
   final List<String> recentSearchedStringList;
   // 狀態
   final WordlistStateStatus status;
+  // 總頁數，用來判斷是否已載入完畢(API傳來的資料是空的)
+  final int totalPages;
 
-  const WordlistState(
-      {@required this.initSearchCondition,
-      @required this.currentList,
-      @required this.currentPage,
-      @required this.paginatedList,
-      @required this.currentSearchCondition,
-      @required this.searchedList,
-      @required this.recentSearchedStringList,
-      @required this.status});
+  const WordlistState({
+    @required this.initSearchCondition,
+    @required this.currentList,
+    @required this.currentPage,
+    @required this.paginatedList,
+    @required this.currentSearchCondition,
+    @required this.searchedList,
+    @required this.recentSearchedStringList,
+    @required this.status,
+    @required this.totalPages,
+  });
 
   @override
   List<Object> get props {
@@ -40,6 +51,8 @@ class WordlistState extends Equatable {
       currentSearchCondition,
       searchedList,
       recentSearchedStringList,
+      status,
+      totalPages,
     ];
   }
 
@@ -53,6 +66,7 @@ class WordlistState extends Equatable {
       searchedList: [],
       recentSearchedStringList: [],
       status: WordlistStateStatus.initial,
+      totalPages: 999,
     );
   }
 
@@ -65,6 +79,7 @@ class WordlistState extends Equatable {
     List<Vocabulary> searchedList,
     List<String> recentSearchedStringList,
     WordlistStateStatus status,
+    int totalPages,
   }) {
     return WordlistState(
       initSearchCondition: initSearchCondition ?? this.initSearchCondition,
@@ -77,6 +92,7 @@ class WordlistState extends Equatable {
       recentSearchedStringList:
           recentSearchedStringList ?? this.recentSearchedStringList,
       status: status ?? this.status,
+      totalPages: totalPages ?? this.totalPages,
     );
   }
 }

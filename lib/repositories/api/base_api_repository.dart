@@ -1,9 +1,12 @@
 import 'package:toeicking2021/blocs/blocs.dart';
+import 'package:toeicking2021/models/first_page_vocabulary.dart';
 import 'package:toeicking2021/models/models.dart';
 
 abstract class BaseAPIRepository {
   Future<List<SentenceBundle>> getSentenceBundles(
       {String email, Map<String, String> parameters});
+  Future<FirstPageVocabulary> getFirstPageWordList(
+      {String pageToLoad, String pageSize, String email});
   Future<List<Vocabulary>> getWordList(
       {String pageToLoad, String pageSize, String email});
   Future<User> addUser({User user});

@@ -109,10 +109,13 @@ class _DetailScreenState extends State<DetailScreen>
   GlobalKey<ExpandableBottomSheetState> _expandableKey = GlobalKey();
   // 判斷箭頭圖示用的變數
   bool isArrowDown = false;
+  // Tab用的controller，要傳入Tab()和TabBarView()的controller屬性裡，兩個才會綁定
   TabController _tabController;
   @override
   void initState() {
     super.initState();
+    // 在這裡實體化TabController()
+    // 要使用vsync屬性必須在上方引用SingleTickerProviderStateMixin
     _tabController = TabController(length: 3, vsync: this);
   }
 
@@ -159,16 +162,15 @@ class _DetailScreenState extends State<DetailScreen>
                 // 點按header會toggle
                 enableToggle: true,
                 // background屬性值(必備)是此頁"非上下拉部份"的widget
-                // 使用TabBar最外層要包DefaultTabController
                 background: Column(
                   children: [
-                    // ***1,2要放在NestedScrollView()的外面，不然會一起scroll***
+                    // ***1(句子與翻譯),2(TabBar)要放在NestedScrollView()的外面，不然會一起scroll***
                     // 因為只要TabBarView的部份可以scroll就好
-                    //1. 句子與翻譯
+                    // 1. 句子與翻譯
                     DetailSentenceContainer(
                       sentenceBundle: sentenceState.sentenceBundle,
                     ),
-                    // 2. TabBar(外包一個Container()可以做外型客製化)
+                    // 2. TabBar(外包一個Container()可以做外型客製化)，傳入_tabController
                     TabBarContainer(controller: _tabController),
                     // ***要外包Expanded，NestedScrollView才可以放在column裡面***
                     Expanded(
@@ -182,12 +184,14 @@ class _DetailScreenState extends State<DetailScreen>
                           // Column()外也必須包SliverToBoxAdapter
                           SliverToBoxAdapter(
                             child: Column(
+                              // children widget也會跟著一起scroll
+                              // 效果很難看，所以是空的
                               children: [],
                             ),
                           )
                         ],
                         // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
-                        // 3. TabBarView
+                        // 3. TabBarView，傳入_tabController
                         body: DetailTabBarView(
                             controller: _tabController,
                             sentenceBundle: sentenceState.sentenceBundle),
@@ -251,16 +255,15 @@ class _DetailScreenState extends State<DetailScreen>
                 // 點按header會toggle
                 enableToggle: true,
                 // background屬性值(必備)是此頁"非上下拉部份"的widget
-                // 使用TabBar最外層要包DefaultTabController
                 background: Column(
                   children: [
-                    // 1,2要放在NestedScrollView()的外面，不然會一起scroll
+                    // ***1(句子與翻譯),2(TabBar)要放在NestedScrollView()的外面，不然會一起scroll***
                     // 因為只要TabBarView的部份可以scroll就好
-                    //1. 句子與翻譯
+                    // 1. 句子與翻譯
                     DetailSentenceContainer(
                       sentenceBundle: widget.sentenceBundle,
                     ),
-                    // 2. TabBar(外包一個Container()可以做外型客製化)
+                    // 2. TabBar(外包一個Container()可以做外型客製化)，傳入_tabController
                     TabBarContainer(controller: _tabController),
                     // 要外包Expanded，NestedScrollView才可以放在column裡面
                     Expanded(
@@ -274,12 +277,14 @@ class _DetailScreenState extends State<DetailScreen>
                           // Column()外也必須包SliverToBoxAdapter
                           SliverToBoxAdapter(
                             child: Column(
+                              // children widget也會跟著一起scroll
+                              // 效果很難看，所以是空的
                               children: [],
                             ),
                           )
                         ],
                         // body為NestedScrollView的必備屬性(要scroll的widget放在這，就是TabBarView)
-                        // 3. TabBarView
+                        // 3. TabBarView，傳入_tabController
                         body: DetailTabBarView(
                             controller: _tabController,
                             sentenceBundle: widget.sentenceBundle),
@@ -348,7 +353,7 @@ class _DetailScreenState extends State<DetailScreen>
     String url = '';
     switch (audioState.rate) {
       case '0.75':
-        // 不同頁導來的，資料來源會不一樣
+        // 不同頁導來的，資料變數會不一樣
         url = widget.fromWordList
             ? sentenceBundleState.sentenceBundle.slowAudioUrls[urlDicKey]
             : widget.sentenceBundle.slowAudioUrls[urlDicKey];

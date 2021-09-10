@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:toeicking2021/blocs/blocs.dart';
 import 'package:toeicking2021/models/db_user_model.dart';
+import 'package:toeicking2021/models/first_page_vocabulary.dart';
 import 'package:toeicking2021/models/sentenceBundle_model.dart';
 import 'package:toeicking2021/models/vocabulary_model.dart';
 import 'package:toeicking2021/repositories/api/base_api_repository.dart';
@@ -50,8 +51,39 @@ class APIRepository extends BaseAPIRepository {
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
   }
+  
+  // 獲得第一頁字彙列表(含總頁數)
+  @override
+  Future<FirstPageVocabulary> getFirstPageWordList({
+    String pageToLoad,
+    String pageSize,
+    String email,
+  }) async {
+    Uri uri = Uri.https(
+      _baseUrl,
+      '/Vocabulary/GetFirstPageVocabulary',
+    );
+    var response = await http.post(
+      uri,
+      headers: _headers,
+      body: json.encode(
+        {
+          'PageToLoad': pageToLoad,
+          'PageSize': pageSize,
+          'Email': email,
+        },
+      ),
+    );
+    if (response.statusCode == 200) {
+      Map<String, dynamic> sourceMap = json.decode(response.body);
+      FirstPageVocabulary firstPageVocabulary = FirstPageVocabulary.fromMap(sourceMap['data']);
+      return firstPageVocabulary;
+    } else {
+      throw Exception('出現無法預期錯誤，請稍後再試');
+    }
+  }
 
-  // 獲得字彙列表
+  // 獲得字彙列表(第二頁以上，只有字彙，沒有總頁數)
   @override
   Future<List<Vocabulary>> getWordList({
     String pageToLoad,
@@ -83,7 +115,6 @@ class APIRepository extends BaseAPIRepository {
       );
       return vocabularies;
     } else {
-      print(Exception().toString());
       throw Exception('出現無法預期錯誤，請稍後再試');
     }
   }

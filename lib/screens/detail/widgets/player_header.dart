@@ -31,10 +31,10 @@ class PlayerHeader extends StatelessWidget {
         children: [
           // 使用SizedBox()包住chidren widget，並設定高度後是去掉原有padding的方式
           SizedBox(
-            height: 45.0,
+            height: 40.0,
             child: Padding(
                 // 調整箭頭上下
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 6.0),
                 // 用isArrowDown判斷要顯示向上或向下的箭頭
                 child: isArrowDown
                     ? IconButton(
