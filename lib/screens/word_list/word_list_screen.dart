@@ -29,7 +29,6 @@ class _WordListScreenState extends State<WordListScreen> {
           // _scrollController.offset >= _scrollController.position.maxScrollExtent && !_scrollController.position.outOfRange
           // 上面這段條件式代表***滑動到頁面最下方時還繼續要向下滑動***
           // 再加上context.read<WordlistBloc>().state.status != WordlistStateStatus.paginating
-          // 再加上已經撈完全部資料：context.read<WordlistBloc>().state.isLoadedOut == false
           // 確認現在沒有正在撈分頁資料(以免重複撈分頁資料)
           print(
               'total pages:${context.read<WordlistBloc>().state.totalPages.toString()}, current page:${context.read<WordlistBloc>().state.currentPage.toString()}');
@@ -65,6 +64,19 @@ class _WordListScreenState extends State<WordListScreen> {
     super.dispose();
   }
 
+  // onRefresh的callback函式(型別必須是Future<void>)
+  Future<void> _refreshFromTop() async {
+    // 重新載入第一頁
+    context.read<WordlistBloc>().add(
+          WordlistLoad(
+              pageSize: '7',
+              currentPage: '1',
+              email: context.read<AuthBloc>().state.user.email),
+        );
+    // 拉完讓RefreshIndicator消失
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +86,7 @@ class _WordListScreenState extends State<WordListScreen> {
       ),
       body: BlocConsumer<WordlistBloc, WordlistState>(
         listener: (context, state) {
+          // 載入第二頁到最後一頁
           if (state.status == WordlistStateStatus.paginating) {
             // 若目前snackbar還沒結束就出現下一個snackbar，呼叫此方法結束目前的snackbar
             // 要在呼叫snackbar之前呼叫這個方法
@@ -87,6 +100,7 @@ class _WordListScreenState extends State<WordListScreen> {
               ),
             );
           }
+          // 載完最後一頁後再次載入
           if (state.status == WordlistStateStatus.loadedOut) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -105,20 +119,33 @@ class _WordListScreenState extends State<WordListScreen> {
               break;
             // 預設顯示資料
             default:
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5.0,
-                  vertical: 20.0,
+              // 頁面頂端上滑重新載入第一頁
+              return RefreshIndicator(
+                // 頁面邊緣上滑到一定程度時(幅度不夠大不會觸發)會觸發的callback(撈資料)
+                onRefresh: () => _refreshFromTop(),
+                // 顯示頁面捲軸位置
+                child: Scrollbar(
+                  // 不滑動時也顯示捲軸位置
+                  isAlwaysShown: true,
+                  // hover時顯示整根捲軸
+                  showTrackOnHover: true,
+                  // 捲軸位置線條寬度
+                  thickness: 5.0,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5.0,
+                      vertical: 20.0,
+                    ),
+                    // 要把_scrollController傳入controller屬性
+                    controller: _scrollController,
+                    itemCount: state.currentList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Vocabulary vocabulary = state.currentList[index];
+                      return VocabularyTile(vocabulary: vocabulary);
+                    },
+                  ),
                 ),
-                child: ListView.builder(
-                  // 要把_scrollController傳入controller屬性
-                  controller: _scrollController,
-                  itemCount: state.currentList.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Vocabulary vocabulary = state.currentList[index];
-                    return VocabularyTile(vocabulary: vocabulary);
-                  },
-                ),
+                // ),
               );
           }
         },

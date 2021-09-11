@@ -48,13 +48,20 @@ class _ModeScreenState extends State<ModeScreen> {
               return const Center(child: CircularProgressIndicator());
             // 預設狀態是顯示資料
             default:
-              // ListView要設Padding，不然內容太靠近螢幕
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5.0,
-                  vertical: 20.0,
-                ),
+              // 顯示頁面捲軸位置
+              return Scrollbar(
+                // 不滑動時也顯示捲軸位置
+                isAlwaysShown: true,
+                // hover時顯示整根捲軸
+                showTrackOnHover: true,
+                // 捲軸位置線條寬度
+                thickness: 5.0,
                 child: ListView.builder(
+                  // ListView要設Padding，不然內容太靠近螢幕
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 5.0,
+                    vertical: 20.0,
+                  ),
                   itemCount: state.sentenceBundles.length,
                   itemBuilder: (BuildContext context, int index) {
                     final sentenceBundle = state.sentenceBundles[index];

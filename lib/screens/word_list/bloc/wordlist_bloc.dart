@@ -63,7 +63,8 @@ class WordlistBloc extends Bloc<WordlistEvent, WordlistState> {
         yield state.copyWith(
           // 將狀態改為loadedOut，顯示字彙已載入完成
           status: WordlistStateStatus.loadedOut,
-          // 要把currentPage存為總頁數+1，所以之後都不能再進入這個方法
+          // 要把state的currentPage存為totalPages+1，所以之後都不能再進入這個方法(因為event的currentPage會是state的currentPage+2)
+          // 因為有設條件：context.read<WordlistBloc>().state.currentPage <= (context.read<WordlistBloc>().state.totalPages) + 1
           // 也因此字彙已載入完成只會顯示一次，若要每次都顯示，就不要存入這個狀態即可
           // currentPage就會一直等於totalPages
           currentPage: int.tryParse(event.currentPage),

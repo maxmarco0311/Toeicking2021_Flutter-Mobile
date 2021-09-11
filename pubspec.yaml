@@ -50,6 +50,7 @@ dependencies:
   assets_audio_player: ^3.0.3+3
 
   expandable_bottom_sheet: ^1.1.0
+  accordion: ^2.1.0
 
   material_design_icons_flutter: ^4.0.5955
 
