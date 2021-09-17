@@ -55,7 +55,7 @@ class AudioSettingCubit extends Cubit<AudioSettingState> {
     @required Status status,
     @required StreamController<Status> statusStreamController,
   }) async {
-    // 在stream裡加入status資料
+    // 在stream裡加入status資料，讓player監聽，不同的status，player會做不同的處理
     statusStreamController.sink.add(status);
     // 更新state
     emit(

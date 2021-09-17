@@ -52,7 +52,7 @@ class TabNavigator extends StatelessWidget {
     );
   }
 
-// 自訂建立Route(或Screen)的方法
+  // 自訂建立Route(或Screen)的方法
   // 原本MaterialApp裡的routes屬性值型別就是Map<String, WidgetBuilder>
   // 所以_routeBuilders()回傳Map<String, WidgetBuilder>來建立路由
   Map<String, WidgetBuilder> _routeBuilders() {
@@ -68,7 +68,7 @@ class TabNavigator extends StatelessWidget {
     return {tabNavigatorRoot: (context) => _getScreen(context, item)};
   }
 
-// 真正實作Route(或Screen)的方法，依傳入的item回傳Screen()
+  // 真正實作Route(或Screen)的方法，依傳入的item回傳Screen()
   // 從nav_item導向到的頁面要在這裡定義或回傳
   Widget _getScreen(BuildContext context, BottomNavItem item) {
     print('_getScreen called: ${item.toString()}');

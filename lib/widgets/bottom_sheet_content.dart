@@ -23,28 +23,31 @@ class BottomSheetContent extends StatefulWidget {
 }
 
 class _BottomSheetContentState extends State<BottomSheetContent> {
+  // 要更新State用的變數(共四個)
   String genderSelectedValue;
   String rateSelectedValue;
   String accentSelectedValue;
+  // 用來更新state裡面的statusStreamController，因此型別要一樣
+  StreamController<Status> _statusStreamController;
   // 替文字框設預設值和清除文字框要用
   TextEditingController _controller;
   // 使用validate()方法
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   // 專門用來調整validation message出現後，文字框旁邊padding用的變數
   bool isValidated = false;
-  // 用來更新state裡面的statusStreamController，因此型別要一樣
-  StreamController<Status> _statusStreamController;
+
   @override
   void initState() {
-    // (從state獲得)radio button獲得預設值
+    // 先從傳入的state中獲得目前狀態的值，給radio button預設值用
     genderSelectedValue = widget.state.gender;
     rateSelectedValue = widget.state.rate;
     accentSelectedValue = widget.state.accent;
+    // 獲得state中現有的statusStreamController，否則此頁的_statusStreamController會是null
+    _statusStreamController = widget.state.statusStreamController;
     // (從state獲得)文字框獲得預設值的方法(不能跟initialValue同時用)
     _controller =
         TextEditingController(text: (widget.state.repeatedTimes).toString());
-    // 獲得state中現有的statusStreamController，否則此頁的_statusStreamController會是null
-    _statusStreamController = widget.state.statusStreamController;
+
     super.initState();
   }
 
@@ -248,7 +251,9 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                                 widget.cubit.updateRepeatedTimes(
                                   repeatedTimes: int.tryParse(value),
                                   status: Status.repeatedTimesUpdate,
-                                  // 將此頁的_statusStreamController傳進state裡更新
+                                  // ***將此頁的_statusStreamController傳進state裡更新***
+                                  // ***cubit裡不同的方法會把上面的status值sink.add進入stream中***
+                                  // ***把這頁的_statusStreamController傳入方法，確保stream會觸發上面status值的事件***
                                   statusStreamController:
                                       _statusStreamController,
                                 );
