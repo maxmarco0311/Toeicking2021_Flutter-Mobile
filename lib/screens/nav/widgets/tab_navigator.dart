@@ -73,20 +73,22 @@ class TabNavigator extends StatelessWidget {
   Widget _getScreen(BuildContext context, BottomNavItem item) {
     print('_getScreen called: ${item.toString()}');
     switch (item) {
+      // case BottomNavItem.mode:
+      //   return BlocProvider<SentenceBundleBloc>(
+      //     create: (context) => SentenceBundleBloc(
+      //       apiRepository: context.read<APIRepository>(),
+      //       // 頁面建立時建立SentenceBundleBloc，SentenceBundleBloc建立時觸發SentenceBundleLoad事件
+      //     )..add(
+      //         SentenceBundleLoad(
+      //           email: context.read<AuthBloc>().state.user.email,
+      //           // 參數範例：{'FormData.Keyword': 'absolutely'}
+      //           parameters: {},
+      //         ),
+      //       ),
+      //     child: ModeScreen(),
+      //   );
       case BottomNavItem.mode:
-        return BlocProvider<SentenceBundleBloc>(
-          create: (context) => SentenceBundleBloc(
-            apiRepository: context.read<APIRepository>(),
-            // 頁面建立時建立SentenceBundleBloc，SentenceBundleBloc建立時觸發SentenceBundleLoad事件
-          )..add(
-              SentenceBundleLoad(
-                email: context.read<AuthBloc>().state.user.email,
-                // 參數範例：{'FormData.Keyword': 'absolutely'}
-                parameters: {},
-              ),
-            ),
-          child: ModeScreen(),
-        );
+        return ModeScreen();
       case BottomNavItem.students:
         return StudentsScreen();
       case BottomNavItem.wordList:

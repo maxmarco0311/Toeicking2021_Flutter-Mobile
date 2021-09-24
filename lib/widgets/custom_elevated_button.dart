@@ -16,17 +16,22 @@ class CustomElevatedButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        primary: Theme.of(context).primaryColor,
-        onPrimary: Colors.white,
-      ),
-      child: Padding(
-        padding: edgeInset,
-        child: Text(
-          text,
-          style: TextStyle(fontSize: fontSize, letterSpacing: 1.0),
+    // 讓按鈕"寬度"可以撐滿父容器
+    return SizedBox(
+      // 設了此屬性，不用設水平pading，按鈕也可水平稱滿父容器
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          primary: Theme.of(context).primaryColor,
+          onPrimary: Colors.white,
+        ),
+        child: Padding(
+          padding: edgeInset,
+          child: Text(
+            text,
+            style: TextStyle(fontSize: fontSize, letterSpacing: 1.0),
+          ),
         ),
       ),
     );

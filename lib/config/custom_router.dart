@@ -47,7 +47,11 @@ class CustomRouter {
     switch (settings.name) {
       case DetailScreen.routeName:
         return DetailScreen.route(args: settings.arguments);
-
+      case ModeResultScreen.routeName:
+        return ModeResultScreen.route(args: settings.arguments);
+      // 開發階段用的，最後要刪掉
+      case ModeScreen.routeName:
+        return ModeScreen.route();
       default:
         return _errorRoute();
     }
