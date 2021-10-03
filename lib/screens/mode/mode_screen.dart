@@ -114,12 +114,12 @@ class _ModeScreenState extends State<ModeScreen> {
                           GridCard(
                             imageSrc: 'assets/images/test.png',
                             title: '大題',
-                            press: () {},
+                            press: _showMultiSelect(context),
                           ),
                           GridCard(
                             imageSrc: 'assets/images/grammar.png',
                             title: '文法',
-                            press: _showMultiSelect(context),
+                            press: _showNestedDropdown(context),
                           ),
                           GridCard(
                             imageSrc: 'assets/images/vocabulary.png',
@@ -254,6 +254,18 @@ class _ModeScreenState extends State<ModeScreen> {
   }
 
   VoidCallback _showMultiSelect(BuildContext context) {
+    return () {
+      showModalBottomSheet(
+        // 設此屬性，長度為100%
+        // isScrollControlled: true,
+        shape: kBottomSheetTopRoundedCorner,
+        context: context,
+        builder: (_) => CategoryBottomSheet(),
+      );
+    };
+  }
+
+  VoidCallback _showNestedDropdown(BuildContext context) {
     return () {
       showModalBottomSheet(
         // 設此屬性，長度為100%

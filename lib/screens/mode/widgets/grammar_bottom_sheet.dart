@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:getwidget/getwidget.dart';
-import 'package:toeicking2021/utilities/control_list.dart';
+import 'package:toeicking2021/screens/mode/widgets/widgets.dart';
+import 'package:toeicking2021/utilities/utilities.dart';
 import 'package:toeicking2021/widgets/widgets.dart';
 
 class GrammarBottomSheet extends StatefulWidget {
@@ -11,6 +11,12 @@ class GrammarBottomSheet extends StatefulWidget {
 }
 
 class _GrammarBottomSheetState extends State<GrammarBottomSheet> {
+  // 母下拉的value
+  String topSelectedValue;
+  // 子下拉的value
+  String subSelectedValue;
+  // 控制子下拉的顯示
+  bool showSubDropdown = false;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -24,39 +30,39 @@ class _GrammarBottomSheetState extends State<GrammarBottomSheet> {
                 fontSize: 20.0,
               ),
             ),
-            GFMultiSelect(
-              items: grammarCategories,
-              onSelect: (value) {
-                print('selected $value ');
+            // 母下拉
+            DropdownList(
+              // initialTopValue: "1",
+              dropdownList: topDropdown,
+              value: topSelectedValue,
+              onChanged: (newValue) {
+                setState(() {
+                  //子下拉有選取後(這時子下拉的value(subSelectedValue)已經有值)，又要再選母下拉生出另一個子下拉
+                  //但依內建Widget設計，新的子下拉items中一定要有一個item的value值必須跟原來選取的value值一樣
+                  //否則會報錯，解決之道***是在母下拉改變時，將子下拉的value值變null***
+                  subSelectedValue = null;
+                  // 將選中的值給狀態變數
+                  topSelectedValue = newValue;
+                  showSubDropdown = true;
+                });
               },
-              dropdownTitleTileText: '請選擇',
-              dropdownTitleTileMargin:
-                  EdgeInsets.only(top: 22, left: 18, right: 18, bottom: 5),
-              dropdownTitleTilePadding: EdgeInsets.all(10),
-              dropdownUnderlineBorder:
-                  const BorderSide(color: Colors.transparent, width: 2),
-              dropdownTitleTileBorder:
-                  Border.all(color: Colors.grey[200], width: 1),
-              dropdownTitleTileBorderRadius: BorderRadius.circular(5),
-              expandedIcon: const Icon(
-                Icons.keyboard_arrow_down,
-                color: Colors.black54,
-              ),
-              collapsedIcon: const Icon(
-                Icons.keyboard_arrow_up,
-                color: Colors.black54,
-              ),
-              submitButton: Text('OK'),
-              cancelButton: Text('Cancel'),
-              dropdownTitleTileTextStyle:
-                  const TextStyle(fontSize: 14, color: Colors.black54),
-              padding: const EdgeInsets.all(6),
-              margin: const EdgeInsets.all(6),
-              type: GFCheckboxType.basic,
-              activeBgColor: GFColors.SUCCESS,
-              activeBorderColor: GFColors.SUCCESS,
-              inactiveBorderColor: Colors.grey[200],
             ),
+            // 要用Bloc狀態變數(因為可能一打開就要顯示"子下拉")控制顯示
+            showSubDropdown
+                ? Column(
+                    children: [
+                      DropdownList(
+                        value: subSelectedValue,
+                        // 利用母下拉的value(topSelectedValue)決定子下拉的Map
+                        dropdownList: grammarCategoryMap[topSelectedValue],
+                        onChanged: (newValue) {
+                          setState(() => subSelectedValue = newValue);
+                        },
+                      ),
+                      SizedBox(height: 20.0),
+                    ],
+                  )
+                : SizedBox.shrink(),
             CustomElevatedButton(
               fontSize: 18.0,
               edgeInset: EdgeInsets.symmetric(horizontal: 0.0, vertical: 11.0),

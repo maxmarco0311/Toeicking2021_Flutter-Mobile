@@ -23,6 +23,7 @@ class GridCard extends StatelessWidget {
         return ClipRRect(
           borderRadius: BorderRadius.circular(13),
           child: Container(
+            // 要設寬度，並且和InkWell()的寬度
             width: (constraints.maxWidth / 2) - 10,
             // padding: EdgeInsets.all(20),
             decoration: BoxDecoration(
