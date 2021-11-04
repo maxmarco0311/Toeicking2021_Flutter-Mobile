@@ -35,7 +35,7 @@ class _DropdownListState extends State<DropdownList> {
           value: widget.value,
           hint: Text('請選擇'),
           onChanged: widget.onChanged,
-          // 從自己的Map<String,String>繫結成List<DropdownMenuItem<String>
+          // 從自己的Map<String,String>繫結成List<DropdownMenuItem<String>>
           items: widget.dropdownList
               .map(
                 (key, value) => MapEntry(

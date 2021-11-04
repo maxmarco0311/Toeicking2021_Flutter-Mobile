@@ -104,7 +104,7 @@ class _WordListScreenState extends State<WordListScreen> {
           if (state.status == WordlistStateStatus.loadedOut) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.black87,
                 duration: const Duration(seconds: 2),
                 content: Text('字彙載入完畢！'),
               ),

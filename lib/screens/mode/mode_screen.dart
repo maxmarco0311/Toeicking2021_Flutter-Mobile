@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:getwidget/getwidget.dart';
 import 'package:intl/intl.dart';
 import 'package:toeicking2021/config/ui_const.dart';
 import 'package:toeicking2021/screens/mode/widgets/widgets.dart';
@@ -212,6 +213,12 @@ class _ModeScreenState extends State<ModeScreen> {
                                 ],
                               )
                             : SizedBox.shrink(),
+                        GFAccordion(
+                            title: 'GF Accordion',
+                            content:
+                                'GetFlutter is an open source library that comes with pre-build 1000+ UI components.',
+                            collapsedIcon: Text('Show'),
+                            expandedIcon: Text('Hide')),
                         SizedBox(
                           height: 10.0,
                         ),

@@ -99,8 +99,10 @@ class _ModeResultScreenState extends State<ModeResultScreen> {
                     horizontal: 5.0,
                     vertical: 20.0,
                   ),
+                  // 可設state.sentenceBundles.length + 1
                   itemCount: state.sentenceBundles.length,
                   itemBuilder: (BuildContext context, int index) {
+                    // index = 0時render ListView中第一個widget
                     final sentenceBundle = state.sentenceBundles[index];
                     // final bloc = context.read<SentenceBundleBloc>();
                     // 將ListTile獨立出來-->SentenceTile()還要傳入user資料

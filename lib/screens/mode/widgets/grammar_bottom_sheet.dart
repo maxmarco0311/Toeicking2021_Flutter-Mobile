@@ -37,8 +37,8 @@ class _GrammarBottomSheetState extends State<GrammarBottomSheet> {
               value: topSelectedValue,
               onChanged: (newValue) {
                 setState(() {
-                  //子下拉有選取後(這時子下拉的value(subSelectedValue)已經有值)，又要再選母下拉生出另一個子下拉
-                  //但依內建Widget設計，新的子下拉items中一定要有一個item的value值必須跟原來選取的value值一樣
+                  //子下拉有選取後(這時子下拉的value(subSelectedValue)已經有值)，又要再選母下拉生出另一個子下拉時
+                  //依內建Widget設計，新的子下拉items中一定要有一個item的value值必須跟原來選取的value值一樣
                   //否則會報錯，解決之道***是在母下拉改變時，將子下拉的value值變null***
                   subSelectedValue = null;
                   // 將選中的值給狀態變數

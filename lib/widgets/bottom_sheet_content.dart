@@ -190,10 +190,13 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                           style: kBottomSheetTextStyle,
                         ),
                       ),
-                      // 文字框旁邊有內容，文字框要包Expanded()
-                      Expanded(
-                        child: Form(
-                          key: _formKey,
+                      // 文字框左邊若有內容，文字框要佔據剩餘寬度時要包Expanded()
+                      // 若文字框要有固定寬度，只需要在TextFormField()外包一個Container()
+                      Form(
+                        key: _formKey,
+                        child: Container(
+                          // 文字框的固定寬度
+                          width: 110.0,
                           child: TextFormField(
                             // _key(FormKey)可以直接放在TextFormField單獨使用
                             // 使用Form()的好處是一次可以處理多個TextFormField
@@ -230,7 +233,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                                 setState(() => isValidated = true);
                                 // isValidated = true;
                                 // 錯誤訊息
-                                return '必需輸入數字0~100';
+                                return '輸入數字0~100';
                               } else {
                                 setState(() => isValidated = false);
                                 // 沒有錯誤訊息
