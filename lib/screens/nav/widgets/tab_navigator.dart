@@ -97,6 +97,7 @@ class TabNavigator extends StatelessWidget {
             apiRepository: context.read<APIRepository>(),
           )..add(
               WordlistLoad(
+                  // 要處理初次登入的使用者，wordList會是空的情況，下列先寫死
                   // 載入第一頁
                   currentPage: "1",
                   // 每頁先7筆

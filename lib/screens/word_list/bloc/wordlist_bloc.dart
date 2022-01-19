@@ -30,6 +30,7 @@ class WordlistBloc extends Bloc<WordlistEvent, WordlistState> {
   }
 
   // 載入每頁字彙列表(含第一頁及第二頁以上)
+  // ***要處理初次登入的user情境：設條件先不要撈wordLsit***
   Stream<WordlistState> _mapWordlistLoadToState(
     WordlistLoad event,
   ) async* {

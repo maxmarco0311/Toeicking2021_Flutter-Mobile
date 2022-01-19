@@ -88,7 +88,7 @@ class UserState extends Equatable {
         );
       }
     }
-    // dataMap['wordList']是否為null(如(還沒加入字彙列表時)
+    // dataMap['wordList']為null(如還沒加入字彙列表時)
     else {
       return UserState(
         email: dataMap['email'],

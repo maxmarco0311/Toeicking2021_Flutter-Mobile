@@ -181,23 +181,24 @@ class _ModeScreenState extends State<ModeScreen> {
                                 spacing: 10.0,
                                 // runSpacing: 5.0,
                                 children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      color: Color(0xFFF8F8F8),
-                                    ),
-                                    padding: EdgeInsets.all(5.0),
-                                    child: Text(
-                                      '篩選條件',
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
+                                  // 篩選條件標籤
+                                  // Container(
+                                  //   decoration: BoxDecoration(
+                                  //     border: Border.all(
+                                  //       color: Theme.of(context).primaryColor,
+                                  //     ),
+                                  //     borderRadius: BorderRadius.circular(8.0),
+                                  //     color: Color(0xFFF8F8F8),
+                                  //   ),
+                                  //   padding: EdgeInsets.all(5.0),
+                                  //   child: Text(
+                                  //     '篩選條件',
+                                  //     style: TextStyle(
+                                  //       fontSize: 16.0,
+                                  //       color: Theme.of(context).primaryColor,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   Chip(
                                     label: Text('大題：Part 3'),
                                   ),
@@ -213,12 +214,13 @@ class _ModeScreenState extends State<ModeScreen> {
                                 ],
                               )
                             : SizedBox.shrink(),
-                        GFAccordion(
-                            title: 'GF Accordion',
-                            content:
-                                'GetFlutter is an open source library that comes with pre-build 1000+ UI components.',
-                            collapsedIcon: Text('Show'),
-                            expandedIcon: Text('Hide')),
+                        // Accordion
+                        // GFAccordion(
+                        //     title: 'GF Accordion',
+                        //     content:
+                        //         'GetFlutter is an open source library that comes with pre-build 1000+ UI components.',
+                        //     collapsedIcon: Text('Show'),
+                        //     expandedIcon: Text('Hide')),
                         SizedBox(
                           height: 10.0,
                         ),
