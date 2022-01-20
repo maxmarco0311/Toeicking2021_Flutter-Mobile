@@ -79,7 +79,7 @@ class _ModeScreenState extends State<ModeScreen> {
                       ),
                     ),
                     Text(
-                      '篩選你要學習的內容',
+                      '篩選您要學習的內容',
                       style: Theme.of(context).textTheme.headline5.copyWith(
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
@@ -199,18 +199,19 @@ class _ModeScreenState extends State<ModeScreen> {
                                   //     ),
                                   //   ),
                                   // ),
-                                  Chip(
-                                    label: Text('大題：Part 3'),
-                                  ),
-                                  Chip(
-                                    label: Text('文法：現在簡單式'),
-                                  ),
-                                  Chip(
-                                    label: Text('大題：Part 3'),
-                                  ),
-                                  Chip(
-                                    label: Text('文法：現在簡單式'),
-                                  ),
+                                  // Chip標籤
+                                  // Chip(
+                                  //   label: Text('大題：Part 3'),
+                                  // ),
+                                  // Chip(
+                                  //   label: Text('文法：現在簡單式'),
+                                  // ),
+                                  // Chip(
+                                  //   label: Text('大題：Part 3'),
+                                  // ),
+                                  // Chip(
+                                  //   label: Text('文法：現在簡單式'),
+                                  // ),
                                 ],
                               )
                             : SizedBox.shrink(),

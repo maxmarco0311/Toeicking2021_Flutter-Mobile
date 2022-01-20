@@ -3,13 +3,13 @@ class ValueHandler {
     String imageUrl = '';
     switch (accent) {
       case 'US':
-        imageUrl = 'assets/images/test.jpg';
+        imageUrl = 'assets/images/america.jpg';
         break;
-      case 'US':
-        imageUrl = 'assets/images/test.jpg';
+      case 'GB':
+        imageUrl = 'assets/images/britain.png';
         break;
-      case 'US':
-        imageUrl = 'assets/images/test.jpg';
+      case 'AU':
+        imageUrl = 'assets/images/australia.png';
         break;
       default:
         imageUrl = 'assets/images/test.jpg';

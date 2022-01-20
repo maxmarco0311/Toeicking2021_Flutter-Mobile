@@ -99,17 +99,17 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
                         children: [
                           _buildAccentRadioButtonSet(
                             accentValue: 'US',
-                            imageUrl: 'assets/images/test.jpg',
+                            imageUrl: 'assets/images/america.jpg',
                           ),
                           SizedBox(width: 5.0),
                           _buildAccentRadioButtonSet(
                             accentValue: 'GB',
-                            imageUrl: 'assets/images/test.jpg',
+                            imageUrl: 'assets/images/britain.png',
                           ),
                           SizedBox(width: 5.0),
                           _buildAccentRadioButtonSet(
                             accentValue: 'AU',
-                            imageUrl: 'assets/images/test.jpg',
+                            imageUrl: 'assets/images/australia.png',
                           ),
                         ],
                       ),
@@ -380,6 +380,7 @@ class _BottomSheetContentState extends State<BottomSheetContent> {
           height: 35.0,
           width: 50.0,
           image: AssetImage(imageUrl),
+          fit: BoxFit.cover,
         ),
       ],
     );

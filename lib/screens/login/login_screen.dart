@@ -65,9 +65,9 @@ class LoginScreen extends StatelessWidget {
                             const Text(
                               '多益金',
                               style: TextStyle(
-                                fontSize: 28.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+                                  fontSize: 28.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.teal),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 12.0),
